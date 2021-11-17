@@ -8,7 +8,35 @@ authors = ["Lukáš Vokráčko <lukas@b2c2.com>"]
 python = "^3.9"
 
 [tool.poetry.dev-dependencies]
+mypy = "^0.910"
+black = "^21.11b0"
+flake8 = "^4.0.1"
+isort = "^5.10.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+
+[tool.mypy]
+python_version = 3.9
+exclude = "test_*|cli.py"
+cache_dir = "/dev/null"
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+disallow_subclassing_any = true
+ignore_missing_imports = true
+warn_return_any = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unused_configs = true
