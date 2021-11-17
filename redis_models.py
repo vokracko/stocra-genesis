@@ -1,11 +1,19 @@
+import decimal
 import json
 from dataclasses import asdict, dataclass, field
 from decimal import Decimal
-from typing import List, Optional
+from typing import Any, List, Optional
 
 RedisAddress = str
 RedisTransactionHash = str
 RedisOutputIndex = int
+
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o: Any) -> Any:
+        if isinstance(o, decimal.Decimal):
+            return str(o)
+        return super(DecimalEncoder, self).default(o)
 
 
 @dataclass
@@ -17,7 +25,7 @@ class RedisTransactionPointer:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, dict_data: Optional[dict]) -> "RedisTransactionPointer":
+    def from_dict(cls, dict_data: Optional[dict]) -> Optional["RedisTransactionPointer"]:
         if not dict_data:
             return None
 
@@ -36,8 +44,7 @@ class RedisInput:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, dict_data) -> "RedisInput":
-
+    def from_dict(cls, dict_data: dict) -> "RedisInput":
         return cls(
             address=dict_data.get("address"),
             transaction_pointer=RedisTransactionPointer.from_dict(dict_data.get("transaction_pointer")),
@@ -53,7 +60,7 @@ class RedisOutput:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, dict_data) -> "RedisOutput":
+    def from_dict(cls, dict_data: dict) -> "RedisOutput":
         return cls(address=dict_data["address"], amount=Decimal(dict_data["amount"]))
 
 
@@ -69,7 +76,7 @@ class RedisTransaction:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, dict_data) -> "RedisTransaction":
+    def from_dict(cls, dict_data: dict) -> "RedisTransaction":
         dict_data["inputs"] = [RedisInput.from_dict(i) for i in dict_data["inputs"]]
         dict_data["outputs"] = [RedisOutput.from_dict(i) for i in dict_data["outputs"]]
         return cls(**dict_data)
@@ -98,7 +105,10 @@ class RedisBlock:
         return data_dict
 
     @classmethod
-    def deserialize(cls, data) -> "RedisBlock":
+    def deserialize(cls, data: str) -> "RedisBlock":
         dict_data = json.loads(data)
         dict_data["transactions"] = [RedisTransaction.from_dict(t) for t in dict_data["transactions"]]
         return cls(**dict_data)
+
+    def serialize(self) -> str:
+        return json.dumps(asdict(self), cls=DecimalEncoder)
