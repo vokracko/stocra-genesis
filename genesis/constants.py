@@ -2,10 +2,12 @@ from enum import Enum
 from typing import List, Type
 
 
-class BlockchainName(Enum):
+class ChoicesEnum(Enum):
+    @classmethod
+    def choices(cls: Type) -> List:
+        return [(choice.name, choice.value) for choice in cls]
+
+
+class BlockchainName(ChoicesEnum):
     BITCOIN = "bitcoin"
     ETHEREUM = "ethereum"
-
-    @classmethod
-    def choices(self, cls: Type) -> List:
-        return [(choice.name, choice.value) for choice in cls]
