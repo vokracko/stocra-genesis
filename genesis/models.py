@@ -30,6 +30,7 @@ class PlainTransactionPointer:
 class PlainInput:
     address: Optional[PlainAddress] = None
     transaction_pointer: Optional[PlainTransactionPointer] = None
+    amount: Optional[Decimal] = None
 
     def __post_init__(self) -> None:
         assert self.address or self.transaction_pointer
