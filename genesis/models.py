@@ -1,31 +1,25 @@
-import decimal
 import json
 from dataclasses import asdict, dataclass, field
 from decimal import Decimal
-from typing import Any, List, Optional
+from typing import List, Optional
 
-RedisAddress = str
-RedisTransactionHash = str
-RedisOutputIndex = int
+from genesis.encoders import DecimalEncoder
 
-
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, o: Any) -> Any:
-        if isinstance(o, decimal.Decimal):
-            return str(o)
-        return super(DecimalEncoder, self).default(o)
+PlainAddress = str
+PlainTransactionHash = str
+PlainOutputIndex = int
 
 
 @dataclass
-class RedisTransactionPointer:
-    transaction_hash: RedisTransactionHash
-    output_index: RedisOutputIndex
+class PlainTransactionPointer:
+    transaction_hash: PlainTransactionHash
+    output_index: PlainOutputIndex
 
     def asdict(self) -> dict:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, dict_data: Optional[dict]) -> Optional["RedisTransactionPointer"]:
+    def from_dict(cls, dict_data: Optional[dict]) -> Optional["PlainTransactionPointer"]:
         if not dict_data:
             return None
 
@@ -33,9 +27,9 @@ class RedisTransactionPointer:
 
 
 @dataclass
-class RedisInput:
-    address: Optional[RedisAddress] = None
-    transaction_pointer: Optional[RedisTransactionPointer] = None
+class PlainInput:
+    address: Optional[PlainAddress] = None
+    transaction_pointer: Optional[PlainTransactionPointer] = None
 
     def __post_init__(self) -> None:
         assert self.address or self.transaction_pointer
@@ -44,31 +38,31 @@ class RedisInput:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, dict_data: dict) -> "RedisInput":
+    def from_dict(cls, dict_data: dict) -> "PlainInput":
         return cls(
             address=dict_data.get("address"),
-            transaction_pointer=RedisTransactionPointer.from_dict(dict_data.get("transaction_pointer")),
+            transaction_pointer=PlainTransactionPointer.from_dict(dict_data.get("transaction_pointer")),
         )
 
 
 @dataclass
-class RedisOutput:
-    address: RedisAddress
+class PlainOutput:
+    address: PlainAddress
     amount: Decimal
 
     def asdict(self) -> dict:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, dict_data: dict) -> "RedisOutput":
+    def from_dict(cls, dict_data: dict) -> "PlainOutput":
         return cls(address=dict_data["address"], amount=Decimal(dict_data["amount"]))
 
 
 @dataclass
-class RedisTransaction:
-    hash: RedisTransactionHash
-    inputs: List[RedisInput]
-    outputs: List[RedisOutput]
+class PlainTransaction:
+    hash: PlainTransactionHash
+    inputs: List[PlainInput]
+    outputs: List[PlainOutput]
     amount: Decimal
     fees: Decimal
 
@@ -76,18 +70,18 @@ class RedisTransaction:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, dict_data: dict) -> "RedisTransaction":
-        dict_data["inputs"] = [RedisInput.from_dict(i) for i in dict_data["inputs"]]
-        dict_data["outputs"] = [RedisOutput.from_dict(i) for i in dict_data["outputs"]]
+    def from_dict(cls, dict_data: dict) -> "PlainTransaction":
+        dict_data["inputs"] = [PlainInput.from_dict(i) for i in dict_data["inputs"]]
+        dict_data["outputs"] = [PlainOutput.from_dict(i) for i in dict_data["outputs"]]
         return cls(**dict_data)
 
 
 @dataclass
-class RedisBlock:
+class PlainBlock:
     height: int
     hash: str
     timestamp: int
-    transactions: List[RedisTransaction] = field(default_factory=list)
+    transactions: List[PlainTransaction] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         # I don't really care if this runs even after 2286
@@ -105,9 +99,9 @@ class RedisBlock:
         return data_dict
 
     @classmethod
-    def deserialize(cls, data: str) -> "RedisBlock":
+    def deserialize(cls, data: str) -> "PlainBlock":
         dict_data = json.loads(data)
-        dict_data["transactions"] = [RedisTransaction.from_dict(t) for t in dict_data["transactions"]]
+        dict_data["transactions"] = [PlainTransaction.from_dict(t) for t in dict_data["transactions"]]
         return cls(**dict_data)
 
     def serialize(self) -> str:

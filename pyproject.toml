@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "redis_models"
+name = "genesis"
 version = "0.1.0"
 description = ""
 authors = ["Lukáš Vokráčko <lukas@b2c2.com>"]

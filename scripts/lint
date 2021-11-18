@@ -4,7 +4,8 @@ set -xe
 
 CHECK=$1
 
-isort ./ ${CHECK}
-black ./ ${CHECK}
-flake8 ./ --max-line-length 120
-mypy ./
+isort genesis ${CHECK}
+black genesis ${CHECK}
+flake8 genesis --max-line-length 120
+mypy genesis
+
