@@ -65,7 +65,7 @@ class PlainTransaction:
     inputs: List[PlainInput]
     outputs: List[PlainOutput]
     amount: Decimal
-    fees: Decimal
+    fee: Decimal
 
     def asdict(self) -> dict:
         return asdict(self)
