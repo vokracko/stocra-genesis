@@ -1,5 +1,5 @@
 import json
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, fields
 from decimal import Decimal
 from typing import List, Optional
 
@@ -91,12 +91,9 @@ class PlainBlock:
         self.timestamp = int(self.timestamp)
 
     def asdict(self, exclude: Optional[list] = None) -> dict:
-        data_dict = asdict(self)
-
-        if exclude is not None:
-            for key in exclude:
-                del data_dict[key]
-
+        exclude = exclude if exclude else []
+        field_names = {field.name for field in fields(self) if field.name not in exclude}
+        data_dict = {field_name: getattr(self, field_name) for field_name in field_names}
         return data_dict
 
     @classmethod
