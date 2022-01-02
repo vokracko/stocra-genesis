@@ -7,6 +7,7 @@ authors = ["Lukáš Vokráčko <lukas@b2c2.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 logging518 = "*"
+setuptools = "^60.2.0"
 
 [tool.poetry.dev-dependencies]
 mypy = "*"
