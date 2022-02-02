@@ -18,5 +18,5 @@ class NodeAdapterFactory:
 
 class ParserFactory:
     @classmethod
-    def get_parser(cls, blockchain: str, adapter: NodeAdapter) -> Parser:
+    def get_parser(cls, blockchain: BlockchainName, adapter: NodeAdapter) -> Parser:
         return PARSERS[blockchain](adapter)
