@@ -55,16 +55,21 @@ class BitcoinParser(Parser):
         #
         # return transactions
 
-    async def decode_transaction(self, raw_transaction: dict) -> PlainTransaction:
+    async def decode_transaction(self, raw_transaction: dict, *, decode_inputs=True) -> PlainTransaction:
+        fee = Decimal("0")
+        outputs = await self.get_outputs_with_amounts_from_raw_transaction(raw_transaction)
         is_coinbase_transaction = await self._is_coinbase_transaction(raw_transaction)
         if is_coinbase_transaction:
             inputs = []
-            fee = Decimal("0")
         else:
-            inputs = await self.get_inputs_from_raw_transaction(raw_transaction)
-            fee = await self.get_fee_from_raw_transaction(raw_transaction)
+            if decode_inputs:
+                inputs = await self.get_decoded_inputs_with_amounts_from_raw_transaction(raw_transaction)
+                sum_of_inputs = sum([input_.amount for input_ in inputs])
+                sum_of_outputs = sum(output.amount for output in outputs)
+                fee = sum_of_inputs - sum_of_outputs
+            else:
+                inputs = await self.get_inputs_from_raw_transaction(raw_transaction)
 
-        outputs = await self.get_outputs_with_amounts_from_raw_transaction(raw_transaction)
         amount = await self.get_total_amount_from_raw_transaction(raw_transaction)
         transaction_hash = raw_transaction["txid"]
 
@@ -79,6 +84,21 @@ class BitcoinParser(Parser):
                     transaction_hash=vin["txid"],
                     output_index=vin["vout"],
                 )
+            )
+            results.append(transaction_input)
+
+        return results
+
+    async def get_decoded_inputs_with_amounts_from_raw_transaction(self, raw_transaction: dict) -> List[PlainInput]:
+        results = []
+
+        for vin in raw_transaction["vin"]:
+            # TODO this should be async calls
+            raw_input_transaction = await self.node_adapter.get_transaction(vin["txid"])
+            decoded_input_transaction = await self.decode_transaction(raw_input_transaction, decode_inputs=False)
+            transaction_input = PlainInput(
+                address=decoded_input_transaction.outputs[vin["vout"]].address,
+                amount=decoded_input_transaction.outputs[vin["vout"]].amount,
             )
             results.append(transaction_input)
 
@@ -108,9 +128,6 @@ class BitcoinParser(Parser):
 
     async def get_total_amount_from_raw_transaction(self, raw_transaction: dict) -> Decimal:
         return sum([Decimal(vout["value"]) for vout in raw_transaction["vout"]], start=Decimal(0))
-
-    async def get_fee_from_raw_transaction(self, raw_transaction: dict) -> Decimal:
-        return Decimal(raw_transaction["fee"])
 
     async def _is_coinbase_transaction(self, raw_transaction: dict) -> bool:
         vin = raw_transaction["vin"]
