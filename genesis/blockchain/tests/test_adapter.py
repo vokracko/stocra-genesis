@@ -12,7 +12,7 @@ class AdapterStub(NodeAdapter):
 
 
 @pytest.mark.asyncio
-async def test_next_block_with_transactions_does_not_exist() -> None:
+async def test_get_block_including_transactions() -> None:
     adapter = AdapterStub(url="none")
     result = await adapter.get_block_including_transactions(0)
     assert result is None

@@ -7,9 +7,11 @@ from genesis.models import (
     PlainTransactionHash,
 )
 
+TRANSACTION_HASH = "682fd04fe5a80d2e238074e2c28d3ecb7c85786326fb96dd0527865f11aee8ed"
+
 TRANSACTION_JSON = {
-    "txid": "682fd04fe5a80d2e238074e2c28d3ecb7c85786326fb96dd0527865f11aee8ed",
-    "hash": "682fd04fe5a80d2e238074e2c28d3ecb7c85786326fb96dd0527865f11aee8ed",
+    "txid": TRANSACTION_HASH,
+    "hash": TRANSACTION_HASH,
     "version": 1,
     "size": 134,
     "vsize": 134,
@@ -32,7 +34,7 @@ TRANSACTION_JSON = {
     "blocktime": 1273915632,
 }
 TRANSACTION_DECODED = PlainTransaction(
-    hash=PlainTransactionHash("682fd04fe5a80d2e238074e2c28d3ecb7c85786326fb96dd0527865f11aee8ed"),
+    hash=PlainTransactionHash(TRANSACTION_HASH),
     inputs=[],
     outputs=[PlainOutput(address=PlainAddress("1KnUs1jKkSbcNwBt7gA4PaRKhiabuVXsaT"), amount=Decimal(50))],
     amount=Decimal(50),

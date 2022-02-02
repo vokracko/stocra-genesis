@@ -82,7 +82,7 @@ class PlainBlock:
     height: int
     hash: str
     timestamp: int
-    transactions: List[PlainTransaction] = field(default_factory=list)
+    transactions: List[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         # I don't really care if this runs even after 2286

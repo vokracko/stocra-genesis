@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "genesis"
-version = "0.2.2"
+version = "0.2.6"
 description = ""
 authors = ["Lukáš Vokráčko <lukas@b2c2.com>"]
 
@@ -11,7 +11,6 @@ setuptools = "*"
 requests = "*"
 base58 = "*"
 aiohttp = "*"
-fire = "*"
 
 [tool.poetry.dev-dependencies]
 mypy = "*"
@@ -24,6 +23,7 @@ typing-extensions = "*"
 pytest-asyncio = "*"
 aioresponses = "*"
 flexmock = "*"
+fire = "0.*"
 
 [build-system]
 requires = ["setuptools", "poetry-core>=1.0.0"]

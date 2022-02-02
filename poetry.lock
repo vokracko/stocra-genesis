@@ -145,7 +145,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 name = "fire"
 version = "0.4.0"
 description = "A library for automatically generating command line interfaces."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -399,7 +399,7 @@ use_chardet_on_py3 = ["chardet (>=3.0.2,<5)"]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
@@ -407,7 +407,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "termcolor"
 version = "1.1.0"
 description = "ANSII Color formatting for output in terminal."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -463,7 +463,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "cba9287b69277bbd4598e661168a3c6d533eade03c456fd981e7b63170e53ee9"
+content-hash = "530d6eba18a148348d806a4400121c15b26b0ef295890d23dd022d176403b3cb"
 
 [metadata.files]
 aiohttp = [

@@ -20,16 +20,16 @@ class NodeAdapter:
     async def get_transaction(self, transaction_hash: str) -> dict:
         raise NotImplementedError
 
-    async def get_block_by_hash(self, block_hash: str) -> dict:
+    async def get_block_by_hash(self, block_hash: str, *, include_transactions: bool) -> dict:
         raise NotImplementedError
 
-    async def get_block_hash(self, height: int) -> str:
+    async def get_block_hash(self, height: int, *, include_transactions: bool) -> str:
         raise NotImplementedError
 
-    async def get_block_by_height(self, height: int) -> dict:
+    async def get_block_by_height(self, height: int, *, include_transactions: bool) -> dict:
         raise NotImplementedError
 
-    async def get_block_latest(self) -> dict:
+    async def get_block_latest(self, *, include_transactions: bool) -> dict:
         raise NotImplementedError
 
     async def get_block_including_transactions(self, height: int) -> Optional[dict]:

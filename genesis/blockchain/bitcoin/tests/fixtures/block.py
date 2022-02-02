@@ -1,6 +1,5 @@
 from genesis.blockchain.bitcoin.tests.fixtures.coinbase_transaction import (
-    TRANSACTION_DECODED,
-    TRANSACTION_JSON,
+    TRANSACTION_HASH,
 )
 from genesis.models import PlainBlock
 
@@ -14,7 +13,7 @@ BLOCK_JSON = {
     "version": 1,
     "versionHex": "00000001",
     "merkleroot": "d3ad39fa52a89997ac7381c95eeffeaf40b66af7a57e9eba144be0a175a12b11",
-    "tx": [TRANSACTION_JSON],
+    "tx": [TRANSACTION_HASH],
     "time": 1231473952,
     "mediantime": 1231471428,
     "nonce": 1709518110,
@@ -30,5 +29,5 @@ BLOCK_DECODED = PlainBlock(
     height=10,
     hash="000000002c05cc2e78923c34df87fd108b22221ac6076c18f3ade378a4d915e9",
     timestamp=1231473952,
-    transactions=[TRANSACTION_DECODED],
+    transactions=[TRANSACTION_HASH],
 )

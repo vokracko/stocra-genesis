@@ -36,20 +36,24 @@ class BitcoinParser(Parser):
             height=raw_block["height"],
             hash=raw_block["hash"],
             timestamp=raw_block["time"],
-            transactions=transactions,
+            transactions=raw_block["tx"],
         )
 
-    async def decode_transactions(self, raw_block: dict) -> List[PlainTransaction]:
-        transactions = []
-        transaction_count = raw_block["nTx"]
-
-        for index, raw_transaction in enumerate(raw_block["tx"], start=1):
-            logger.debug("Decoding transaction %s/%s: %s", index, transaction_count, raw_transaction["hash"])
-            transaction = await self.decode_transaction(raw_transaction)
-            logger.debug("Transaction decoded %s/%s: %s", index, transaction_count, transaction.hash)
-            transactions.append(transaction)
-
-        return transactions
+    async def decode_transactions(self, raw_block: dict) -> List[str]:
+        return raw_block["tx"]
+        # transactions = []
+        # transaction_count = raw_block["nTx"]
+        #
+        # for index, raw_transaction in enumerate(raw_block["tx"], start=1):
+        #     if isinstance(raw_transaction, str):
+        #         transactions.append(raw_transaction)
+        #
+        #     logger.debug("Decoding transaction %s/%s: %s", index, transaction_count, raw_transaction["hash"])
+        #     transaction = await self.decode_transaction(raw_transaction)
+        #     logger.debug("Transaction decoded %s/%s: %s", index, transaction_count, transaction.hash)
+        #     transactions.append(transaction)
+        #
+        # return transactions
 
     async def decode_transaction(self, raw_transaction: dict) -> PlainTransaction:
         is_coinbase_transaction = await self._is_coinbase_transaction(raw_transaction)

@@ -21,10 +21,10 @@ class BitcoinNodeAdapter(NodeAdapter):
     async def get_transaction(self, transaction_hash: str, verbose: bool = True) -> dict:
         return await self.post(dict(method="getrawtransaction", params=[transaction_hash, verbose]))
 
-    async def get_block_by_hash(self, block_hash: str, verbosity: int = 2) -> dict:
+    async def get_block_by_hash(self, block_hash: str, *, include_transactions: bool) -> dict:
         data = dict(
             method="getblock",
-            params=[block_hash, verbosity],
+            params=[block_hash, 2 if include_transactions else 1],
         )
         return await self.post(data)
 
@@ -37,12 +37,12 @@ class BitcoinNodeAdapter(NodeAdapter):
         )
         return cast(str, block_hash)
 
-    async def get_block_by_height(self, height: int, verbosity: int = 2) -> dict:
+    async def get_block_by_height(self, height: int, *, include_transactions: bool) -> dict:
         with log_duration("Get block hash"):
             block_hash = await self.get_block_hash(height)
 
         with log_duration("Get block by hash"):
-            return await self.get_block_by_hash(block_hash, verbosity)
+            return await self.get_block_by_hash(block_hash, include_transactions=include_transactions)
 
     async def get_block_latest(self) -> dict:
         block_height = await self.post(
@@ -50,7 +50,7 @@ class BitcoinNodeAdapter(NodeAdapter):
                 method="getblockcount",
             )
         )
-        return await self.get_block_by_height(block_height)
+        return await self.get_block_by_height(block_height, include_transactions=False)
 
     async def _get_block_including_transactions(self, height: int) -> dict:
         block_hash = await self.get_block_hash(height)
