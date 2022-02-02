@@ -29,6 +29,9 @@ class NodeAdapter:
     async def get_block_by_height(self, height: int) -> dict:
         raise NotImplementedError
 
+    async def get_block_latest(self) -> dict:
+        raise NotImplementedError
+
     async def get_block_including_transactions(self, height: int) -> Optional[dict]:
         try:
             block = await self._get_block_including_transactions(height)

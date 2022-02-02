@@ -53,6 +53,9 @@ class EthereumNodeAdapter(NodeAdapter):
 
         return result
 
+    async def get_block_latest(self) -> dict:
+        raise NotImplementedError
+
     async def _get_block_including_transactions(self, height: int) -> Optional[dict]:
         return await self.get_block_by_height(height, include_transactions=True)
 
