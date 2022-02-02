@@ -44,7 +44,7 @@ class BitcoinNodeAdapter(NodeAdapter):
         with log_duration("Get block by hash"):
             return await self.get_block_by_hash(block_hash, verbosity)
 
-    async def _get_next_block_with_transactions(self, height: int) -> dict:
+    async def _get_block_including_transactions(self, height: int) -> dict:
         block_hash = await self.get_block_hash(height)
         return await self.get_block_by_hash(block_hash)
 

@@ -53,7 +53,7 @@ class EthereumNodeAdapter(NodeAdapter):
 
         return result
 
-    async def _get_next_block_with_transactions(self, height: int) -> Optional[dict]:
+    async def _get_block_including_transactions(self, height: int) -> Optional[dict]:
         return await self.get_block_by_height(height, include_transactions=True)
 
     @property
