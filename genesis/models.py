@@ -76,6 +76,9 @@ class PlainTransaction:
         dict_data["outputs"] = [PlainOutput.from_dict(i) for i in dict_data["outputs"]]
         return cls(**dict_data)
 
+    def serialize(self) -> str:
+        return json.dumps(asdict(self), cls=DecimalEncoder)
+
 
 @dataclass
 class PlainBlock:
