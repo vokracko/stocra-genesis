@@ -1,13 +1,17 @@
 [tool.poetry]
 name = "genesis"
-version = "0.1.8"
+version = "0.2.0"
 description = ""
 authors = ["Lukáš Vokráčko <lukas@b2c2.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
 logging518 = "*"
-setuptools = "^60.2.0"
+setuptools = "*"
+requests = "*"
+base58 = "*"
+aiohttp = "*"
+fire = "*"
 
 [tool.poetry.dev-dependencies]
 mypy = "*"
@@ -16,6 +20,10 @@ flake8 = "*"
 isort = "*"
 pytest = "*"
 mccabe = "*"
+typing-extensions = "*"
+pytest-asyncio = "*"
+aioresponses = "*"
+flexmock = "*"
 
 [build-system]
 requires = ["setuptools", "poetry-core>=1.0.0"]
@@ -47,3 +55,20 @@ warn_unused_configs = true
 
 [tool.pytest.ini_options]
 cache_dir = "/dev/null"
+
+[tool.logging518]
+version = 1
+disable_existing_loggers = 0
+
+[tool.logging518.formatters.standard]
+format = "%(asctime)s [%(levelname)s] %(name)s | %(message)s"
+
+[tool.logging518.handlers.console]
+class = "logging.StreamHandler"
+formatter = "standard"
+level = "INFO"
+stream = "ext://sys.stderr"
+
+[tool.logging518.root]
+handlers = ["console"]
+level = "INFO"
