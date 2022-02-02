@@ -55,7 +55,7 @@ class BitcoinParser(Parser):
         #
         # return transactions
 
-    async def decode_transaction(self, raw_transaction: dict, *, decode_inputs=True) -> PlainTransaction:
+    async def decode_transaction(self, raw_transaction: dict, *, decode_inputs=False) -> PlainTransaction:
         fee = Decimal("0")
         outputs = await self.get_outputs_with_amounts_from_raw_transaction(raw_transaction)
         is_coinbase_transaction = await self._is_coinbase_transaction(raw_transaction)
@@ -63,13 +63,12 @@ class BitcoinParser(Parser):
 
         if is_coinbase_transaction:
             inputs = []
+        elif decode_inputs:
+            inputs = await self.get_decoded_inputs_with_amounts_from_raw_transaction(raw_transaction)
+            sum_of_inputs = sum([input_.amount for input_ in inputs])
+            fee = sum_of_inputs - amount
         else:
-            if decode_inputs:
-                inputs = await self.get_decoded_inputs_with_amounts_from_raw_transaction(raw_transaction)
-                sum_of_inputs = sum([input_.amount for input_ in inputs])
-                fee = sum_of_inputs - amount
-            else:
-                inputs = await self.get_inputs_from_raw_transaction(raw_transaction)
+            inputs = await self.get_inputs_from_raw_transaction(raw_transaction)
 
         transaction_hash = raw_transaction["txid"]
 
