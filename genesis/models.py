@@ -20,7 +20,10 @@ class PlainInput(BaseModel):
 
     @root_validator
     def validate_address_or_pointer(cls, values) -> None:
-        assert values["address"] or values["transaction_pointer"]
+        if not (values["address"] or values["transaction_pointer"]):
+            raise ValueError("Either address or transaction pointer must be specified")
+
+        return values
 
 
 class PlainOutput(BaseModel):
@@ -45,4 +48,7 @@ class PlainBlock(BaseModel):
     @validator("timestamp")
     def validate_timestamp(cls, value) -> None:
         # I don't really care if this runs even after 2286
-        assert len(str(value)) == 10, "Timestamp must be in seconds"
+        if len(str(value)) != 10:
+            raise ValueError("Timestamp must be in seconds")
+
+        return value
