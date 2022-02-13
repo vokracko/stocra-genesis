@@ -89,26 +89,29 @@ class BitcoinParser(Parser):
         return results
 
     async def get_decoded_inputs_from_raw_transaction(self, raw_transaction: dict) -> List[PlainInput]:
-        tasks = []
+        input_transactions = []
+        inputs = []
+        transaction_pointers = {vin["txid"]: vin["vout"] for vin in raw_transaction["vin"]}
 
-        for vin in raw_transaction["vin"]:
-            task = asyncio.create_task(
-                self.get_decoded_transaction_input(
-                    PlainTransactionPointer(transaction_hash=vin["txid"], output_index=vin["vout"])
-                )
+        async for input_transaction in await self.node_adapter.get_transactions(transaction_pointers.keys()):
+            input_transactions.append(input_transaction)
+
+        transactions_sorted = sorted(input_transactions, key=lambda item: item["id"])
+
+        for (transaction_pointer_txid, transaction_pointer_vout), transaction in zip(
+            transaction_pointers.items(), transactions_sorted
+        ):
+            decoded_input_transaction = await self.decode_transaction(transaction["result"], decode_inputs=False)
+            input_ = PlainInput(
+                address=decoded_input_transaction.outputs[transaction_pointer_vout].address,
+                amount=decoded_input_transaction.outputs[transaction_pointer_vout].amount,
+                transaction_pointer=PlainTransactionPointer(
+                    transaction_hash=transaction_pointer_txid,
+                    output_index=transaction_pointer_vout,
+                ),
             )
-            tasks.append(task)
-
-        return await asyncio.gather(*tasks)
-
-    async def get_decoded_transaction_input(self, transaction_pointer: PlainTransactionPointer) -> PlainInput:
-        raw_input_transaction = await self.node_adapter.get_transaction(transaction_pointer.transaction_hash)
-        decoded_input_transaction = await self.decode_transaction(raw_input_transaction, decode_inputs=False)
-        return PlainInput(
-            address=decoded_input_transaction.outputs[transaction_pointer.output_index].address,
-            amount=decoded_input_transaction.outputs[transaction_pointer.output_index].amount,
-            transaction_pointer=transaction_pointer,
-        )
+            inputs.append(input_)
+        return inputs
 
     async def get_outputs_with_amounts_from_raw_transaction(self, raw_transaction: dict) -> List[PlainOutput]:
         results = []

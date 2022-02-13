@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import ClassVar, Dict, Optional, cast
+from typing import ClassVar, Dict, List, Optional, Union
 
 import aiohttp
 from aiohttp import ClientConnectorError, ClientResponse
@@ -16,6 +16,9 @@ class NodeAdapter:
 
     def __init__(self, url: str) -> None:
         self.url = url
+
+    async def get_transactions(self, transaction_hashes: List[str], verbose: bool = True) -> List[dict]:
+        raise NotImplementedError
 
     async def get_transaction(self, transaction_hash: str) -> dict:
         raise NotImplementedError
@@ -42,12 +45,11 @@ class NodeAdapter:
     def headers(self) -> dict:
         raise NotImplementedError
 
-    async def post(self, data: dict) -> Dict:
+    async def post(self, data: dict) -> Union[Dict]:
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.post(self.url, json=data, headers=self.headers) as response:
-                    response_json = await self._get_json_or_raise_response_error_aiohttp(response)
-                    return cast(dict, response_json["result"])
+                    return await self._get_json_or_raise_response_error_aiohttp(response)
             except ClientConnectorError:
                 raise Unavailable()
 

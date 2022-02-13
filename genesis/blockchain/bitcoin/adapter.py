@@ -1,6 +1,6 @@
 from base64 import b64encode
 from datetime import timedelta
-from typing import ClassVar, cast
+from typing import ClassVar, Dict, Iterable, List, Union, cast
 
 from aiohttp import ClientResponse
 
@@ -17,6 +17,13 @@ from genesis.constants import BlockchainName
 class BitcoinNodeAdapter(NodeAdapter):
     BLOCKCHAIN: ClassVar[BlockchainName] = BlockchainName.BITCOIN
     BLOCK_TIME: ClassVar[timedelta] = timedelta(seconds=10)
+
+    async def get_transactions(self, transaction_hashes: List[str], verbose: bool = True) -> Iterable[dict]:
+        data = [
+            dict(id=i, method="getrawtransaction", params=[transaction_hash, verbose])
+            for i, transaction_hash in enumerate(transaction_hashes, start=1)
+        ]
+        return self.post_list(data)
 
     async def get_transaction(self, transaction_hash: str, verbose: bool = True) -> dict:
         return await self.post(dict(method="getrawtransaction", params=[transaction_hash, verbose]))
@@ -63,7 +70,7 @@ class BitcoinNodeAdapter(NodeAdapter):
         return dict(Authorization=f"Basic {token}")
 
     @staticmethod
-    async def _get_json_or_raise_response_error_aiohttp(response: ClientResponse) -> dict:
+    async def _get_json_or_raise_response_error_aiohttp(response: ClientResponse) -> Union[List, Dict]:
         if not response.ok:
             if response.status == 503:
                 raise TooManyRequests("Too many requests")
@@ -86,3 +93,12 @@ class BitcoinNodeAdapter(NodeAdapter):
 
         result = await response.json()
         return cast(dict, result)
+
+    async def post(self, *args, **kwargs) -> Dict:
+        result = await super().post(*args, **kwargs)
+        return cast(dict, result["result"])
+
+    async def post_list(self, *args, **kwargs) -> Iterable[Dict]:
+        result = await super().post(*args, **kwargs)
+        for item in result:
+            yield item
