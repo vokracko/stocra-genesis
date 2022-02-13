@@ -43,7 +43,7 @@ class EthereumNodeAdapter(NodeAdapter):
         )
         return await self.post(data)
 
-    async def get_block_latest(self) -> dict:
+    async def get_block_latest(self, *, include_transactions: bool) -> dict:
         raise NotImplementedError
 
     async def _get_block_including_transactions(self, height: int) -> Optional[dict]:

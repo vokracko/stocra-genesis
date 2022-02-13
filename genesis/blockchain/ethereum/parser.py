@@ -22,7 +22,7 @@ class EthereumParser(Parser):
             transactions=transactions,
         )
 
-    async def decode_transaction(self, raw_transaction: dict) -> PlainTransaction:
+    async def decode_transaction(self, raw_transaction: dict, *, decode_inputs: bool) -> PlainTransaction:
         gas_used = Decimal(int(raw_transaction["gas"], 16))
         gas_price = Decimal(int(raw_transaction["gasPrice"], 16))
         fee = gas_used * gas_price / Decimal("1e18")

@@ -40,7 +40,7 @@ class BitcoinParser(Parser):
             transactions=raw_block["tx"],
         )
 
-    async def decode_transactions(self, raw_block: dict) -> List[str]:
+    async def decode_transactions(self, raw_block: dict, *, decode_inputs: bool) -> List[str]:
         transactions = []
         transaction_count = raw_block["nTx"]
 
@@ -49,13 +49,13 @@ class BitcoinParser(Parser):
                 transactions.append(raw_transaction)
 
             logger.debug("Decoding transaction %s/%s: %s", index, transaction_count, raw_transaction["hash"])
-            transaction = await self.decode_transaction(raw_transaction)
+            transaction = await self.decode_transaction(raw_transaction, decode_inputs=decode_inputs)
             logger.debug("Transaction decoded %s/%s: %s", index, transaction_count, transaction.hash)
             transactions.append(transaction)
 
         return transactions
 
-    async def decode_transaction(self, raw_transaction: dict, *, decode_inputs=False) -> PlainTransaction:
+    async def decode_transaction(self, raw_transaction: dict, *, decode_inputs: bool) -> PlainTransaction:
         fee = Decimal("0")
         outputs = await self.get_outputs_with_amounts_from_raw_transaction(raw_transaction)
         is_coinbase_transaction = await self._is_coinbase_transaction(raw_transaction)

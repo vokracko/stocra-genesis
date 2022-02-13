@@ -12,8 +12,8 @@ class Parser:
     def __init__(self, node_adapter: NodeAdapter) -> None:
         self.node_adapter = node_adapter
 
-    async def decode_block(self, raw_block: dict) -> PlainBlock:
+    async def decode_block(self, raw_block: dict, *, decode_inputs: bool) -> PlainBlock:
         raise NotImplementedError
 
-    async def decode_transaction(self, raw_transaction: dict) -> PlainTransaction:
+    async def decode_transaction(self, raw_transaction: dict, *, decode_inputs: bool) -> PlainTransaction:
         raise NotImplementedError
