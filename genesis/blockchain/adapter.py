@@ -2,9 +2,9 @@ from datetime import timedelta
 from typing import ClassVar, Dict, Optional, cast
 
 import aiohttp
-from aiohttp import ClientResponse
+from aiohttp import ClientConnectorError, ClientResponse
 
-from genesis.blockchain.exceptions import BlockDoesNotExist
+from genesis.blockchain.exceptions import Unavailable
 from genesis.constants import BlockchainName
 
 
@@ -33,12 +33,7 @@ class NodeAdapter:
         raise NotImplementedError
 
     async def get_block_including_transactions(self, height: int) -> Optional[dict]:
-        try:
-            block = await self._get_block_including_transactions(height)
-        except BlockDoesNotExist:
-            return None
-
-        return block
+        return await self._get_block_including_transactions(height)
 
     async def _get_block_including_transactions(self, height: int) -> Optional[dict]:
         raise NotImplementedError
@@ -49,9 +44,12 @@ class NodeAdapter:
 
     async def post(self, data: dict) -> Dict:
         async with aiohttp.ClientSession() as session:
-            async with session.post(self.url, json=data, headers=self.headers) as response:
-                response_json = await self._get_json_or_raise_response_error_aiohttp(response)
-                return cast(dict, response_json["result"])
+            try:
+                async with session.post(self.url, json=data, headers=self.headers) as response:
+                    response_json = await self._get_json_or_raise_response_error_aiohttp(response)
+                    return cast(dict, response_json["result"])
+            except ClientConnectorError:
+                raise Unavailable()
 
     @staticmethod
     async def _get_json_or_raise_response_error_aiohttp(response: ClientResponse) -> dict:

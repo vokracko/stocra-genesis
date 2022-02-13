@@ -6,12 +6,12 @@ from aiohttp import ClientResponse
 
 from genesis.blockchain.adapter import NodeAdapter
 from genesis.blockchain.exceptions import (
-    AdapterException,
-    BlockDoesNotExist,
+    DoesNotExist,
     NodeNotReady,
+    TooManyRequests,
+    UnknownNodeException,
 )
 from genesis.constants import BlockchainName
-from genesis.profiling import log_duration
 
 
 class BitcoinNodeAdapter(NodeAdapter):
@@ -38,11 +38,8 @@ class BitcoinNodeAdapter(NodeAdapter):
         return cast(str, block_hash)
 
     async def get_block_by_height(self, height: int, *, include_transactions: bool) -> dict:
-        with log_duration("Get block hash"):
-            block_hash = await self.get_block_hash(height)
-
-        with log_duration("Get block by hash"):
-            return await self.get_block_by_hash(block_hash, include_transactions=include_transactions)
+        block_hash = await self.get_block_hash(height)
+        return await self.get_block_by_hash(block_hash, include_transactions=include_transactions)
 
     async def get_block_latest(self) -> dict:
         block_height = await self.post(
@@ -67,19 +64,25 @@ class BitcoinNodeAdapter(NodeAdapter):
 
     @staticmethod
     async def _get_json_or_raise_response_error_aiohttp(response: ClientResponse) -> dict:
-        if response.status == 400:
-            response_json = await response.json()
-            response_error = response_json.get("error")
-            if response_error["code"] == -28:
-                raise NodeNotReady(response_error["message"])
-            raise AdapterException(response_error)
-        elif response.status == 500:
-            response_json = await response.json()
-            response_error = response_json.get("error")
-            if response_error["code"] == -8:
-                raise BlockDoesNotExist(response_error["message"])
-            raise AdapterException(response_error)
+        if not response.ok:
+            if response.status == 503:
+                raise TooManyRequests("Too many requests")
+            elif response.status == 500:
+                response_json = await response.json()
+                response_error = response_json.get("error")
+                response_error_code = response_error["code"]
+                response_error_message = response_error["message"]
 
-        response.raise_for_status()
+                if response_error_code in [-1, -5, -8]:
+                    raise DoesNotExist(response_error_message)
+                elif response_error_code == -28:
+                    raise NodeNotReady(response_error_message)
+
+                # TODO this must be logged and investigated
+                raise UnknownNodeException(await response.text())
+
+            # TODO this must be logged and investigated
+            raise UnknownNodeException(await response.text())
+
         result = await response.json()
         return cast(dict, result)

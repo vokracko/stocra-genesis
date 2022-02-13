@@ -1,18 +1,34 @@
-class BlockchainException(Exception):
+class NodeException(Exception):
     ...
 
 
-class NodeNotReady(BlockchainException):
+class NodeNotReady(NodeException):
     ...
 
 
-class BlockDoesNotExist(BlockchainException):
+class DoesNotExist(NodeException):
     ...
 
 
-class AdapterException(Exception):
+class TransactionDoesNotExists(NodeException):
     ...
 
 
-class UnknownScriptPubKey(BlockchainException):
+class TooManyRequests(NodeException):
+    ...
+
+
+class Unavailable(NodeException):
+    ...
+
+
+class InvalidHash(NodeException):
+    ...
+
+
+class UnknownNodeException(NodeException):
+    ...
+
+
+class UnknownScriptPubKey(NodeException):
     ...

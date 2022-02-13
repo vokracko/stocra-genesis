@@ -5,7 +5,7 @@ from aioresponses import aioresponses
 from flexmock import flexmock
 
 from genesis.blockchain.ethereum.adapter import EthereumNodeAdapter
-from genesis.blockchain.exceptions import BlockDoesNotExist
+from genesis.blockchain.exceptions import DoesNotExist
 from genesis.blockchain.factory import NodeAdapterFactory
 from genesis.blockchain.tests.utils import AwaitableValue, CalledRequests
 from genesis.constants import BlockchainName
@@ -15,7 +15,7 @@ NODE_URL = "http://127.0.0.1:666/"
 
 @pytest.fixture
 def adapter() -> EthereumNodeAdapter:
-    client = NodeAdapterFactory.get_client(BlockchainName.ETHEREUM.value, url=NODE_URL)
+    client = NodeAdapterFactory.get_client(BlockchainName.ETHEREUM, url=NODE_URL)
     return cast(EthereumNodeAdapter, client)
 
 
@@ -87,7 +87,7 @@ async def test_get_block_including_transactions(adapter: EthereumNodeAdapter) ->
 @pytest.mark.asyncio
 async def test_block_by_hash_does_not_exist(adapter: EthereumNodeAdapter) -> None:
     with aioresponses() as mocker:
-        with pytest.raises(BlockDoesNotExist):
+        with pytest.raises(DoesNotExist):
             mocker.post(NODE_URL, payload=dict(result=None))
             await adapter.get_block_by_hash("abcd")
 
@@ -95,6 +95,6 @@ async def test_block_by_hash_does_not_exist(adapter: EthereumNodeAdapter) -> Non
 @pytest.mark.asyncio
 async def test_block_by_number_does_not_exist(adapter: EthereumNodeAdapter) -> None:
     with aioresponses() as mocker:
-        with pytest.raises(BlockDoesNotExist):
+        with pytest.raises(DoesNotExist):
             mocker.post(NODE_URL, payload=dict(result=None))
             await adapter.get_block_by_height(420)

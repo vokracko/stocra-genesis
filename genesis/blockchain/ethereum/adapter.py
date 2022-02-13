@@ -4,7 +4,7 @@ from typing import ClassVar, Optional, cast
 from aiohttp import ClientResponse
 
 from genesis.blockchain.adapter import NodeAdapter
-from genesis.blockchain.exceptions import BlockDoesNotExist
+from genesis.blockchain.exceptions import DoesNotExist
 from genesis.constants import BlockchainName
 
 
@@ -29,12 +29,7 @@ class EthereumNodeAdapter(NodeAdapter):
             params=[block_hash, include_transactions],
             id=1,
         )
-        result = await self.post(data)
-
-        if result is None:
-            raise BlockDoesNotExist
-
-        return result
+        return await self.post(data)
 
     async def get_block_hash(self, height: int) -> str:
         raise NotImplementedError
@@ -46,12 +41,7 @@ class EthereumNodeAdapter(NodeAdapter):
             params=[hex(height), include_transactions],
             id=1,
         )
-        result = await self.post(data)
-
-        if result is None:
-            raise BlockDoesNotExist
-
-        return result
+        return await self.post(data)
 
     async def get_block_latest(self) -> dict:
         raise NotImplementedError
