@@ -36,7 +36,7 @@ class BitcoinParser(Parser):
         return PlainBlock(
             height=raw_block["height"],
             hash=raw_block["hash"],
-            timestamp=raw_block["time"],
+            timestamp=raw_block["time"] * 1_000,
             transactions=raw_block["tx"],
         )
 

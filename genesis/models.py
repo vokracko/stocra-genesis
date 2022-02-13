@@ -48,7 +48,7 @@ class PlainBlock(BaseModel):
     @validator("timestamp")
     def validate_timestamp(cls, value) -> None:
         # I don't really care if this runs even after 2286
-        if len(str(value)) != 10:
+        if len(str(value)) != 13:
             raise ValueError("Timestamp must be in seconds")
 
         return value
