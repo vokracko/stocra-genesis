@@ -107,6 +107,7 @@ class BitcoinParser(Parser):
         return PlainInput(
             address=decoded_input_transaction.outputs[transaction_pointer.output_index].address,
             amount=decoded_input_transaction.outputs[transaction_pointer.output_index].amount,
+            transaction_pointer=transaction_pointer,
         )
 
     async def get_outputs_with_amounts_from_raw_transaction(self, raw_transaction: dict) -> List[PlainOutput]:
