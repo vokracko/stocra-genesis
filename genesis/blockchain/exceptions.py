@@ -10,19 +10,11 @@ class DoesNotExist(NodeException):
     ...
 
 
-class TransactionDoesNotExists(NodeException):
-    ...
-
-
 class TooManyRequests(NodeException):
     ...
 
 
 class Unavailable(NodeException):
-    ...
-
-
-class InvalidHash(NodeException):
     ...
 
 

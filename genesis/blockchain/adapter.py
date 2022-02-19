@@ -36,9 +36,6 @@ class NodeAdapter:
         raise NotImplementedError
 
     async def get_block_including_transactions(self, height: int) -> Optional[dict]:
-        return await self._get_block_including_transactions(height)
-
-    async def _get_block_including_transactions(self, height: int) -> Optional[dict]:
         raise NotImplementedError
 
     @property

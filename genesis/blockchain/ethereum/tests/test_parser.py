@@ -46,5 +46,5 @@ async def test_decode_transaction(parser: EthereumParser) -> None:
         TRANSACTION_JSON,
     )
 
-    decoded_transaction = await parser.decode_transaction(TRANSACTION_JSON)
+    decoded_transaction = await parser.decode_transaction(TRANSACTION_JSON, decode_inputs=False)
     assert decoded_transaction == TRANSACTION_DECODED

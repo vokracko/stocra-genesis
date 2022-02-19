@@ -52,9 +52,9 @@ class BitcoinNodeAdapter(NodeAdapter):
         block_height = await self.post(dict(method="getblockcount"))
         return await self.get_block_by_height(block_height, include_transactions=include_transactions)
 
-    async def _get_block_including_transactions(self, height: int) -> dict:
+    async def get_block_including_transactions(self, height: int) -> dict:
         block_hash = await self.get_block_hash(height)
-        return await self.get_block_by_hash(block_hash)
+        return await self.get_block_by_hash(block_hash, include_transactions=True)
 
     async def decode_script(self, script: str) -> dict:
         result = await self.post(dict(method="decodescript", params=[script]))

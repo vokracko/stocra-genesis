@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from genesis.constants import CurrencySymbol
 from genesis.models import (
     PlainAddress,
     PlainOutput,
@@ -39,4 +40,5 @@ TRANSACTION_DECODED = PlainTransaction(
     outputs=[PlainOutput(address=PlainAddress("1KnUs1jKkSbcNwBt7gA4PaRKhiabuVXsaT"), amount=Decimal(50))],
     amount=Decimal(50),
     fee=Decimal(0),
+    currency_symbol=CurrencySymbol.BTC,
 )

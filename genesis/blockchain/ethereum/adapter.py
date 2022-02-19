@@ -4,7 +4,6 @@ from typing import ClassVar, Optional, cast
 from aiohttp import ClientResponse
 
 from genesis.blockchain.adapter import NodeAdapter
-from genesis.blockchain.exceptions import DoesNotExist
 from genesis.constants import BlockchainName
 
 

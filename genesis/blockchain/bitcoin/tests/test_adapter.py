@@ -51,7 +51,7 @@ async def test_get_block_hash(adapter: BitcoinNodeAdapter) -> None:
 async def test_get_block_by_height(adapter: BitcoinNodeAdapter, include_transactions: bool) -> None:
     flexmock(adapter).should_receive("get_block_hash").with_args(420).and_return(AwaitableValue("hash")).once()
     flexmock(adapter).should_receive("get_block_by_hash").with_args(
-        hash="hash", include_transactions=include_transactions
+        "hash", include_transactions=include_transactions
     ).and_return(AwaitableValue(42)).once()
     block = await adapter.get_block_by_height(420, include_transactions=include_transactions)
     assert block == 42
@@ -60,7 +60,9 @@ async def test_get_block_by_height(adapter: BitcoinNodeAdapter, include_transact
 @pytest.mark.asyncio
 async def test_get_block_including_transactions(adapter: BitcoinNodeAdapter) -> None:
     flexmock(adapter).should_receive("get_block_hash").with_args(420).and_return(AwaitableValue("hash")).once()
-    flexmock(adapter).should_receive("get_block_by_hash").with_args("hash", True).and_return(AwaitableValue(42)).once()
+    flexmock(adapter).should_receive("get_block_by_hash").with_args("hash", include_transactions=True).and_return(
+        AwaitableValue(42)
+    ).once()
     block = await adapter.get_block_including_transactions(420)
     assert block == 42
 

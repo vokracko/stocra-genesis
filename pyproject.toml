@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "genesis"
-version = "0.3.5"
+version = "0.3.6"
 description = ""
 authors = ["Lukáš Vokráčko <lukas@b2c2.com>"]
 
@@ -29,7 +29,6 @@ fire = "0.*"
 [build-system]
 requires = ["setuptools", "poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
 
 [tool.black]
 line-length = 120

@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from genesis.constants import CurrencySymbol
 from genesis.models import PlainInput, PlainOutput, PlainTransaction
 
 TRANSACTION_JSON = {
@@ -26,10 +27,11 @@ TRANSACTION_DECODED = PlainTransaction(
         PlainInput(
             address="0x39fa8c5f2793459d6622857e7d9fbb4bd91766d3",
             transaction_pointer=None,
-            amount=None,  ## TODO
+            amount=None,  # TODO
         )
     ],
     outputs=[PlainOutput(address="0xc083e9947cf02b8ffc7d3090ae9aea72df98fd47", amount=Decimal("100"))],
     amount=Decimal("100"),
     fee=Decimal("0.002354887722"),
+    currency_symbol=CurrencySymbol.ETH,
 )

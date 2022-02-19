@@ -5,7 +5,6 @@ from genesis.blockchain.bitcoin.adapter import BitcoinNodeAdapter
 from genesis.blockchain.bitcoin.tests.conftest import NODE_URL
 from genesis.blockchain.exceptions import (
     DoesNotExist,
-    InvalidHash,
     NodeNotReady,
     TooManyRequests,
     UnknownNodeException,

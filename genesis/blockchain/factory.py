@@ -1,6 +1,6 @@
 from genesis.blockchain.adapter import NodeAdapter
 from genesis.blockchain.bitcoin.adapter import BitcoinNodeAdapter  # noqa
-from genesis.blockchain.bitcoin.parser import BitcoinParser  # noqs
+from genesis.blockchain.bitcoin.parser import BitcoinParser  # noqa
 from genesis.blockchain.ethereum.adapter import EthereumNodeAdapter  # noqa
 from genesis.blockchain.ethereum.parser import EthereumParser  # noqa
 from genesis.blockchain.parser import Parser

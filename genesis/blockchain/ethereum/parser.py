@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from genesis.blockchain.ethereum.adapter import EthereumNodeAdapter
 from genesis.blockchain.parser import Parser
-from genesis.constants import BlockchainName
+from genesis.constants import BlockchainName, CurrencySymbol
 from genesis.models import PlainBlock, PlainInput, PlainOutput, PlainTransaction
 
 
@@ -34,4 +34,5 @@ class EthereumParser(Parser):
             outputs=[PlainOutput(address=raw_transaction["to"], amount=amount)],
             fee=fee,
             amount=amount,
+            currency_symbol=CurrencySymbol.ETH,
         )

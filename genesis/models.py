@@ -3,6 +3,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel, root_validator, validator
 
+from genesis.constants import CurrencySymbol
+
 PlainAddress = str
 PlainTransactionHash = str
 PlainOutputIndex = int
@@ -37,6 +39,7 @@ class PlainTransaction(BaseModel):
     outputs: List[PlainOutput]
     amount: Decimal
     fee: Decimal
+    currency_symbol: CurrencySymbol
 
 
 class PlainBlock(BaseModel):
@@ -49,6 +52,6 @@ class PlainBlock(BaseModel):
     def validate_timestamp(cls, value) -> None:
         # I don't really care if this runs even after 2286
         if len(str(value)) != 13:
-            raise ValueError("Timestamp must be in seconds")
+            raise ValueError("Timestamp must be in miliseconds")
 
         return value

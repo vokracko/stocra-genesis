@@ -10,7 +10,7 @@ import logging518 as logging
 from genesis.blockchain.bitcoin.adapter import BitcoinNodeAdapter
 from genesis.blockchain.exceptions import UnknownScriptPubKey
 from genesis.blockchain.parser import Parser
-from genesis.constants import BlockchainName
+from genesis.constants import BlockchainName, CurrencySymbol
 from genesis.models import (
     PlainAddress,
     PlainBlock,
@@ -72,7 +72,14 @@ class BitcoinParser(Parser):
 
         transaction_hash = raw_transaction["txid"]
 
-        return PlainTransaction(hash=transaction_hash, inputs=inputs, outputs=outputs, amount=amount, fee=fee)
+        return PlainTransaction(
+            hash=transaction_hash,
+            inputs=inputs,
+            outputs=outputs,
+            amount=amount,
+            fee=fee,
+            currency_symbol=CurrencySymbol.BTC,
+        )
 
     async def get_inputs_from_raw_transaction(self, raw_transaction: dict) -> List[PlainInput]:
         results = []

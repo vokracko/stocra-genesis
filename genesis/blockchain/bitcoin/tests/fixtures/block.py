@@ -28,6 +28,6 @@ BLOCK_JSON = {
 BLOCK_DECODED = PlainBlock(
     height=10,
     hash="000000002c05cc2e78923c34df87fd108b22221ac6076c18f3ade378a4d915e9",
-    timestamp=1231473952,
+    timestamp=1231473952000,
     transactions=[TRANSACTION_HASH],
 )
