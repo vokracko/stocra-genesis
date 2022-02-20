@@ -2,19 +2,19 @@ class NodeException(Exception):
     ...
 
 
-class NodeNotReady(NodeException):
-    ...
-
-
 class DoesNotExist(NodeException):
     ...
 
 
-class TooManyRequests(NodeException):
+class Unavailable(NodeException):
     ...
 
 
-class Unavailable(NodeException):
+class NodeNotReady(Unavailable):
+    ...
+
+
+class TooManyRequests(Unavailable):
     ...
 
 
