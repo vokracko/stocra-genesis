@@ -21,7 +21,7 @@ class PlainInput(BaseModel):
     amount: Optional[Decimal] = None
 
     @root_validator
-    def validate_address_or_pointer(cls, values) -> None:
+    def validate_address_or_pointer(cls, values) -> None:  # pylint: disable=no-self-argument
         if not (values["address"] or values["transaction_pointer"]):
             raise ValueError("Either address or transaction pointer must be specified")
 
@@ -49,7 +49,7 @@ class PlainBlock(BaseModel):
     transactions: List[str] = []
 
     @validator("timestamp")
-    def validate_timestamp(cls, value) -> None:
+    def validate_timestamp(cls, value) -> None:  # pylint: disable=no-self-argument
         # I don't really care if this runs even after 2286
         if len(str(value)) != 13:
             raise ValueError("Timestamp must be in miliseconds")

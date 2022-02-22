@@ -18,14 +18,14 @@ class BitcoinNodeAdapter(NodeAdapter):
     BLOCKCHAIN: ClassVar[BlockchainName] = BlockchainName.BITCOIN
     BLOCK_TIME: ClassVar[timedelta] = timedelta(seconds=10)
 
-    async def get_transactions(self, transaction_hashes: List[str], verbose: bool = True) -> Iterable[dict]:
+    async def get_transactions(self, transaction_hashes: List[str], *, verbose: bool = True) -> Iterable[dict]:
         data = [
             dict(id=i, method="getrawtransaction", params=[transaction_hash, verbose])
             for i, transaction_hash in enumerate(transaction_hashes, start=1)
         ]
         return self.post_list(data)
 
-    async def get_transaction(self, transaction_hash: str, verbose: bool = True) -> dict:
+    async def get_transaction(self, transaction_hash: str, *, verbose: bool = True) -> dict:
         return await self.post(dict(method="getrawtransaction", params=[transaction_hash, verbose]))
 
     async def get_block_by_hash(self, block_hash: str, *, include_transactions: bool) -> dict:
@@ -70,7 +70,8 @@ class BitcoinNodeAdapter(NodeAdapter):
         if not response.ok:
             if response.status == 503:
                 raise TooManyRequests("Too many requests")
-            elif response.status == 500:
+
+            if response.status == 500:
                 response_json = await response.json()
                 response_error = response_json.get("error")
                 response_error_code = response_error["code"]
@@ -78,13 +79,10 @@ class BitcoinNodeAdapter(NodeAdapter):
 
                 if response_error_code in [-1, -5, -8]:
                     raise DoesNotExist(response_error_message)
-                elif response_error_code == -28:
+
+                if response_error_code == -28:
                     raise NodeNotReady(response_error_message)
 
-                # TODO this must be logged and investigated
-                raise UnknownNodeException(await response.text())
-
-            # TODO this must be logged and investigated
             raise UnknownNodeException(await response.text())
 
         result = await response.json()

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "genesis"
-version = "0.3.7"
+version = "0.3.8"
 description = ""
 authors = ["Lukáš Vokráčko <lukas@b2c2.com>"]
 
@@ -16,7 +16,6 @@ pydantic = "*"
 [tool.poetry.dev-dependencies]
 mypy = "*"
 black = "*"
-flake8 = "*"
 isort = "*"
 pytest = "*"
 mccabe = "*"
@@ -25,6 +24,7 @@ pytest-asyncio = "*"
 aioresponses = "*"
 flexmock = "*"
 fire = "0.*"
+pylint = "*"
 
 [build-system]
 requires = ["setuptools", "poetry-core>=1.0.0"]
@@ -37,6 +37,30 @@ line-length = 120
 profile = "black"
 multi_line_output = 3
 include_trailing_comma = true
+
+[tool.pylint.master]
+max-line-length = 120
+output-format = [
+    "colorized",
+]
+load-plugins = [
+    "pylint.extensions.mccabe",
+]
+ignore = [
+    "tests",
+]
+disable = [
+    "missing-docstring",
+    "empty-docstring",
+    "no-self-use",
+    "no-else-return",
+    "too-few-public-methods",
+    "use-dict-literal",
+]
+extension-pkg-whitelist = [
+    "pydantic",
+]
+max-complexity = 10
 
 [tool.mypy]
 python_version = 3.9

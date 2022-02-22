@@ -1,13 +1,16 @@
 from genesis.blockchain.adapter import NodeAdapter
-from genesis.blockchain.bitcoin.adapter import BitcoinNodeAdapter  # noqa
-from genesis.blockchain.bitcoin.parser import BitcoinParser  # noqa
-from genesis.blockchain.ethereum.adapter import EthereumNodeAdapter  # noqa
-from genesis.blockchain.ethereum.parser import EthereumParser  # noqa
+from genesis.blockchain.bitcoin.adapter import BitcoinNodeAdapter
+from genesis.blockchain.bitcoin.parser import BitcoinParser
+from genesis.blockchain.ethereum.adapter import EthereumNodeAdapter
+from genesis.blockchain.ethereum.parser import EthereumParser
 from genesis.blockchain.parser import Parser
 from genesis.constants import BlockchainName
 
-ADAPTERS = {adapter.BLOCKCHAIN: adapter for adapter in NodeAdapter.__subclasses__()}
-PARSERS = {parser.BLOCKCHAIN: parser for parser in Parser.__subclasses__()}
+ADAPTERS = {
+    BitcoinNodeAdapter.BLOCKCHAIN: BitcoinNodeAdapter,
+    EthereumNodeAdapter.BLOCKCHAIN: EthereumNodeAdapter,
+}
+PARSERS = {BitcoinParser.BLOCKCHAIN: BitcoinNodeAdapter, EthereumParser.BLOCKCHAIN: EthereumParser}
 
 
 class NodeAdapterFactory:

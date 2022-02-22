@@ -17,16 +17,16 @@ class NodeAdapter:
     def __init__(self, url: str) -> None:
         self.url = url
 
-    async def get_transactions(self, transaction_hashes: List[str], verbose: bool = True) -> List[dict]:
+    async def get_transactions(self, transaction_hashes: List[str], *, verbose: bool = True) -> List[dict]:
         raise NotImplementedError
 
-    async def get_transaction(self, transaction_hash: str) -> dict:
+    async def get_transaction(self, transaction_hash: str, *, verbose: bool = True) -> dict:
         raise NotImplementedError
 
     async def get_block_by_hash(self, block_hash: str, *, include_transactions: bool) -> dict:
         raise NotImplementedError
 
-    async def get_block_hash(self, height: int, *, include_transactions: bool) -> str:
+    async def get_block_hash(self, height: int) -> str:
         raise NotImplementedError
 
     async def get_block_by_height(self, height: int, *, include_transactions: bool) -> dict:
@@ -47,8 +47,8 @@ class NodeAdapter:
             try:
                 async with session.post(self.url, json=data, headers=self.headers) as response:
                     return await self._get_json_or_raise_response_error_aiohttp(response)
-            except ClientConnectorError:
-                raise Unavailable()
+            except ClientConnectorError as exc:
+                raise Unavailable() from exc
 
     @staticmethod
     async def _get_json_or_raise_response_error_aiohttp(response: ClientResponse) -> dict:

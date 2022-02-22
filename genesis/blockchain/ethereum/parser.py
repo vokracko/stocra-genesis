@@ -14,12 +14,11 @@ class EthereumParser(Parser):
         super().__init__(node_adapter)
 
     async def decode_block(self, raw_block: dict) -> PlainBlock:
-        transactions = [await self.decode_transaction(tx) for tx in raw_block["transactions"]]
         return PlainBlock(
             height=int(raw_block["number"], 16),
             hash=raw_block["hash"],
             timestamp=int(raw_block["timestamp"], 16),
-            transactions=transactions,
+            transactions=raw_block["transactions"],
         )
 
     async def decode_transaction(self, raw_transaction: dict, *, decode_inputs: bool) -> PlainTransaction:
