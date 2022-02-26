@@ -62,8 +62,7 @@ class BitcoinNodeAdapter(NodeAdapter):
 
     @property
     def headers(self) -> dict:
-        token = b64encode(b"rpcuser:rpcpassword").decode("ascii")
-        return dict(Authorization=f"Basic {token}")
+        return dict(Authorization=f"Basic {self.token}")
 
     @staticmethod
     async def _get_json_or_raise_response_error_aiohttp(response: ClientResponse) -> Union[List, Dict]:
