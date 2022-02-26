@@ -10,7 +10,7 @@ ADAPTERS = {
     BitcoinNodeAdapter.BLOCKCHAIN: BitcoinNodeAdapter,
     EthereumNodeAdapter.BLOCKCHAIN: EthereumNodeAdapter,
 }
-PARSERS = {BitcoinParser.BLOCKCHAIN: BitcoinNodeAdapter, EthereumParser.BLOCKCHAIN: EthereumParser}
+PARSERS = {BitcoinParser.BLOCKCHAIN: BitcoinParser, EthereumParser.BLOCKCHAIN: EthereumParser}
 
 
 class NodeAdapterFactory:
