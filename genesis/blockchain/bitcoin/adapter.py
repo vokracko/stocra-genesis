@@ -49,8 +49,11 @@ class BitcoinNodeAdapter(NodeAdapter):
         return await self.get_block_by_hash(block_hash, include_transactions=include_transactions)
 
     async def get_block_latest(self, *, include_transactions: bool) -> dict:
-        block_height = await self.post(dict(method="getblockcount"))
+        block_height = await self.get_block_count()
         return await self.get_block_by_height(block_height, include_transactions=include_transactions)
+
+    async def get_block_count(self) -> int:
+        return await self.post(dict(method="getblockcount"))
 
     async def get_block_including_transactions(self, height: int) -> dict:
         block_hash = await self.get_block_hash(height)
