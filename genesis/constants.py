@@ -28,3 +28,4 @@ class BlockchainName(ChoicesEnum):
 class CurrencySymbol(ChoicesEnum):
     BTC = "BTC"
     ETH = "ETH"
+    LTC = "LTC"
