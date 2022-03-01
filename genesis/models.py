@@ -45,11 +45,11 @@ class PlainTransaction(BaseModel):
 class PlainBlock(BaseModel):
     height: int
     hash: str
-    timestamp: int
+    timestamp_ms: int
     transactions: List[str] = []
 
-    @validator("timestamp")
-    def validate_timestamp(cls, value) -> None:  # pylint: disable=no-self-argument
+    @validator("timestamp_ms")
+    def validate_timestamp_ms(cls, value) -> None:  # pylint: disable=no-self-argument
         # I don't really care if this runs even after 2286
         if len(str(value)) != 13:
             raise ValueError("Timestamp must be in miliseconds")
