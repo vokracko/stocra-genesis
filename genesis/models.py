@@ -17,8 +17,8 @@ class PlainTransactionPointer(BaseModel):
 
 class PlainInput(BaseModel):
     address: Optional[PlainAddress] = None
-    transaction_pointer: Optional[PlainTransactionPointer] = None
     amount: Optional[Decimal] = None
+    transaction_pointer: Optional[PlainTransactionPointer] = None
 
     @root_validator
     def validate_address_or_pointer(cls, values) -> None:  # pylint: disable=no-self-argument
