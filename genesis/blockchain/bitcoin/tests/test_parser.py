@@ -5,11 +5,6 @@ from genesis.blockchain.bitcoin.parser import BitcoinParser
 
 
 @pytest.fixture
-def adapter() -> BitcoinNodeAdapter:
-    return BitcoinNodeAdapter(url="")
-
-
-@pytest.fixture
 def parser(adapter: BitcoinNodeAdapter) -> BitcoinParser:
     return BitcoinParser(adapter)
 
