@@ -1,4 +1,3 @@
-from base64 import b64encode
 from datetime import timedelta
 from typing import ClassVar, Dict, Iterable, List, Union, cast
 
