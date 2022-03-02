@@ -23,6 +23,7 @@ class ChoicesEnum(Enum):
 class BlockchainName(ChoicesEnum):
     BITCOIN = "bitcoin"
     ETHEREUM = "ethereum"
+    LITECOIN = "litecoin"
 
 
 class CurrencySymbol(ChoicesEnum):
