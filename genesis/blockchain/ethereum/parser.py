@@ -1,4 +1,5 @@
 from decimal import Decimal
+from typing import ClassVar
 
 from genesis.blockchain.ethereum.adapter import EthereumNodeAdapter
 from genesis.blockchain.parser import Parser
@@ -8,6 +9,7 @@ from genesis.models import PlainBlock, PlainInput, PlainOutput, PlainTransaction
 
 class EthereumParser(Parser):
     BLOCKCHAIN = BlockchainName.ETHEREUM
+    CURRENCY: ClassVar[CurrencySymbol] = CurrencySymbol.ETH
     node_adapter: EthereumNodeAdapter
 
     def __init__(self, node_adapter: EthereumNodeAdapter) -> None:

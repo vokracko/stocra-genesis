@@ -1,12 +1,13 @@
 from typing import ClassVar
 
 from genesis.blockchain.adapter import NodeAdapter
-from genesis.constants import BlockchainName
+from genesis.constants import BlockchainName, CurrencySymbol
 from genesis.models import PlainBlock, PlainTransaction
 
 
 class Parser:
     BLOCKCHAIN: ClassVar[BlockchainName]
+    CURRENCY_SYMBOL: ClassVar[CurrencySymbol]
     node_adapter: NodeAdapter
 
     def __init__(self, node_adapter: NodeAdapter) -> None:

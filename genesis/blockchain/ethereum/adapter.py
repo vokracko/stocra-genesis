@@ -1,5 +1,4 @@
-from datetime import timedelta
-from typing import ClassVar, Optional, cast
+from typing import Optional, cast
 
 from aiohttp import ClientResponse
 
