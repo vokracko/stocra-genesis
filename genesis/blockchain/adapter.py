@@ -52,7 +52,7 @@ class NodeAdapter:
             async with self.session.post(self.url, json=data, headers=self.headers) as response:
                 return await self._get_json_or_raise_response_error_aiohttp(response)
         except ClientConnectorError as exc:
-            raise Unavailable() from exc
+            raise Unavailable("Node not available") from exc
 
     @staticmethod
     async def _get_json_or_raise_response_error_aiohttp(response: ClientResponse) -> dict:
