@@ -9,8 +9,6 @@ from genesis.constants import BlockchainName
 
 class EthereumNodeAdapter(NodeAdapter):
     BLOCKCHAIN = BlockchainName.ETHEREUM
-    BLOCK_TIME: ClassVar[timedelta] = timedelta(seconds=60)
-    # https://geth.ethereum.org/docs/dapp/tracing
 
     async def get_transaction(self, transaction_hash: str) -> dict:
         data = dict(

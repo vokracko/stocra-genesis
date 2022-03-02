@@ -10,7 +10,6 @@ from genesis.constants import BlockchainName
 
 class NodeAdapter:
     BLOCKCHAIN: ClassVar[BlockchainName]
-    BLOCK_TIME: ClassVar[timedelta]
 
     url: str
     token: str

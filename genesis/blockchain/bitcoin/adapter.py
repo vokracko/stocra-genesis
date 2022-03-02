@@ -15,7 +15,6 @@ from genesis.constants import BlockchainName
 
 class BitcoinNodeAdapter(NodeAdapter):
     BLOCKCHAIN: ClassVar[BlockchainName] = BlockchainName.BITCOIN
-    BLOCK_TIME: ClassVar[timedelta] = timedelta(seconds=10)
 
     async def get_transactions(self, transaction_hashes: List[str], *, verbose: bool = True) -> Iterable[dict]:
         data = [
