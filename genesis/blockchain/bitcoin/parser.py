@@ -18,7 +18,6 @@ from genesis.models import (
     PlainTransaction,
     PlainTransactionPointer,
 )
-from genesis.profiling import log_duration
 
 logger = logging.get_logger(__name__)
 
@@ -150,6 +149,11 @@ class BitcoinParser(Parser):
         return len(vin) == 1 and vin[0].get("coinbase") is not None
 
     async def _decode_address_from_script_pub_key(self, script_pub_key: dict) -> str:
+        addresses = script_pub_key.get("addresses", [])
+
+        if len(addresses) == 1:
+            return addresses[0]
+
         script_type = script_pub_key["type"]
 
         if script_type == "nonstandard":
@@ -159,10 +163,9 @@ class BitcoinParser(Parser):
         elif script_type == "pubkey":
             return await self._p2shpubkey_to_address(script_pub_key["asm"].split(" ")[0])
         elif script_type == "multisig":
-            with log_duration("Decode script"):
-                result = await self.node_adapter.decode_script(script_pub_key["hex"])
-                assert set(result.keys()).issubset({"asm", "type", "p2sh", "segwit"}), f"keys are {result.keys()}"
-                return cast(str, result["p2sh"])
+            result = await self.node_adapter.decode_script(script_pub_key["hex"])
+            assert set(result.keys()).issubset({"asm", "type", "p2sh", "segwit"}), f"keys are {result.keys()}"
+            return cast(str, result["p2sh"])
 
         raise UnknownScriptPubKey(script_type)
 
