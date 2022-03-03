@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "genesis"
-version = "0.3.18"
+version = "0.3.20"
 description = ""
 authors = ["Lukáš Vokráčko <lukas@b2c2.com>"]
 
@@ -12,6 +12,7 @@ requests = "*"
 base58 = "*"
 aiohttp = "*"
 pydantic = "*"
+orjson = "*"
 
 [tool.poetry.dev-dependencies]
 mypy = "*"

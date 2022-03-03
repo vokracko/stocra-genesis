@@ -1,6 +1,8 @@
 from genesis.blockchain.adapter import NodeAdapter
 from genesis.blockchain.bitcoin.adapter import BitcoinNodeAdapter
 from genesis.blockchain.bitcoin.parser import BitcoinParser
+from genesis.blockchain.dogecoin.adapter import DogecoinNodeAdapter
+from genesis.blockchain.dogecoin.parser import DogecoinParser
 from genesis.blockchain.ethereum.adapter import EthereumNodeAdapter
 from genesis.blockchain.ethereum.parser import EthereumParser
 from genesis.blockchain.litecoin.adapter import LitecoinNodeAdapter
@@ -12,11 +14,13 @@ ADAPTERS = {
     BitcoinNodeAdapter.BLOCKCHAIN: BitcoinNodeAdapter,
     EthereumNodeAdapter.BLOCKCHAIN: EthereumNodeAdapter,
     LitecoinNodeAdapter.BLOCKCHAIN: LitecoinNodeAdapter,
+    DogecoinNodeAdapter.BLOCKCHAIN: DogecoinNodeAdapter,
 }
 PARSERS = {
     BitcoinParser.BLOCKCHAIN: BitcoinParser,
     EthereumParser.BLOCKCHAIN: EthereumParser,
     LitecoinParser.BLOCKCHAIN: LitecoinParser,
+    DogecoinParser.BLOCKCHAIN: DogecoinParser,
 }
 
 

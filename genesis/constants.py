@@ -24,9 +24,11 @@ class BlockchainName(ChoicesEnum):
     BITCOIN = "bitcoin"
     ETHEREUM = "ethereum"
     LITECOIN = "litecoin"
+    DOGECOIN = "dogecoin"
 
 
 class CurrencySymbol(ChoicesEnum):
     BTC = "BTC"
     ETH = "ETH"
     LTC = "LTC"
+    DOGE = "DOG"
