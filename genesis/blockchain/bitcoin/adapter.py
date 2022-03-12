@@ -10,6 +10,7 @@ from genesis.blockchain.exceptions import (
     UnknownNodeException,
 )
 from genesis.constants import BlockchainName
+from genesis.encoders import fast_deserialize_response
 
 
 class BitcoinNodeAdapter(NodeAdapter):
@@ -71,7 +72,7 @@ class BitcoinNodeAdapter(NodeAdapter):
                 raise TooManyRequests("Too many requests")
 
             if response.status == 500:
-                response_json = await response.json()
+                response_json = await fast_deserialize_response(response)
                 response_error = response_json.get("error")
                 response_error_code = response_error["code"]
                 response_error_message = response_error["message"]
@@ -84,8 +85,8 @@ class BitcoinNodeAdapter(NodeAdapter):
 
             raise UnknownNodeException(await response.text())
 
-        result = await response.json()
-        return cast(dict, result)
+        result = await fast_deserialize_response(response)
+        return result
 
     async def post(self, *args, **kwargs) -> Dict:
         result = await super().post(*args, **kwargs)
