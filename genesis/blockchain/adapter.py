@@ -1,3 +1,4 @@
+import asyncio
 from typing import ClassVar, Dict, List, Optional, Union
 
 import aiohttp
@@ -12,7 +13,7 @@ class NodeAdapter:
 
     url: str
     token: str
-    session: aiohttp.ClientSession()
+    session: aiohttp.ClientSession
 
     def __init__(self, url: str, token: str) -> None:
         self.url = url
@@ -57,3 +58,7 @@ class NodeAdapter:
     @staticmethod
     async def _get_json_or_raise_response_error_aiohttp(response: ClientResponse) -> dict:
         raise NotImplementedError
+
+    def __del__(self):
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.session.close())
