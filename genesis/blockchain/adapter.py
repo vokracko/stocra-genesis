@@ -6,7 +6,7 @@ from aiohttp import ClientConnectorError, ClientResponse
 
 from genesis.blockchain.exceptions import Unavailable
 from genesis.constants import BlockchainName
-from genesis.encoders import fast_serializer
+from genesis.encoders import fast_serializer_to_str
 
 
 class NodeAdapter:
@@ -19,7 +19,7 @@ class NodeAdapter:
     def __init__(self, url: str, token: str) -> None:
         self.url = url
         self.token = token
-        self.session = aiohttp.ClientSession(json_serialize=fast_serializer)
+        self.session = aiohttp.ClientSession(json_serialize=fast_serializer_to_str)
 
     async def get_transactions(self, transaction_hashes: List[str], *, verbose: bool = True) -> List[dict]:
         raise NotImplementedError
