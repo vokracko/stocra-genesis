@@ -31,4 +31,5 @@ class CurrencySymbol(ChoicesEnum):
     BTC = "BTC"
     ETH = "ETH"
     LTC = "LTC"
-    DOGE = "DOG"
+    DOGE = "DOGE"
+    USDT = "USDT"
