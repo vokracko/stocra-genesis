@@ -1,9 +1,17 @@
+import decimal
+
 import orjson
 from aiohttp import ClientResponse
 
 
+def default_object_serializer(obj: object):
+    if isinstance(obj, decimal.Decimal):
+        return str(obj)
+    raise TypeError
+
+
 def fast_serializer_to_bytes(obj: dict) -> bytes:
-    return orjson.dumps(obj)  # pylint:disable=no-member
+    return orjson.dumps(obj, default=default_object_serializer)  # pylint:disable=no-member
 
 
 def fast_serializer_to_str(obj: dict) -> str:
