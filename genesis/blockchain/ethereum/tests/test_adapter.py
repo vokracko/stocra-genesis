@@ -76,15 +76,6 @@ async def test_get_block_by_height(adapter: EthereumNodeAdapter, include_transac
 
 
 @pytest.mark.asyncio
-async def test_get_block_including_transactions(adapter: EthereumNodeAdapter) -> None:
-    flexmock(adapter).should_receive("get_block_by_height").with_args(height=420, include_transactions=True).and_return(
-        AwaitableValue(42)
-    ).once()
-    block = await adapter.get_block_including_transactions(420)
-    assert block == 42
-
-
-@pytest.mark.asyncio
 async def test_block_by_hash_does_not_exist(adapter: EthereumNodeAdapter) -> None:
     with aioresponses() as mocker:
         with pytest.raises(DoesNotExist):

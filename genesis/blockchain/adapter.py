@@ -39,9 +39,6 @@ class NodeAdapter:
     async def get_block_latest(self, *, include_transactions: bool) -> dict:
         raise NotImplementedError
 
-    async def get_block_including_transactions(self, height: int) -> Optional[dict]:
-        raise NotImplementedError
-
     async def get_block_count(self) -> int:
         raise NotImplementedError
 
