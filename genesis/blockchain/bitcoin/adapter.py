@@ -21,7 +21,7 @@ class BitcoinNodeAdapter(NodeAdapter):
             dict(id=i, method="getrawtransaction", params=[transaction_hash, verbose])
             for i, transaction_hash in enumerate(transaction_hashes, start=1)
         ]
-        return self.post_list(data)
+        return self.post_multiple(data)
 
     async def get_transaction(self, transaction_hash: str, *, verbose: bool = True) -> dict:
         return await self.post(dict(method="getrawtransaction", params=[transaction_hash, verbose]))
@@ -88,7 +88,7 @@ class BitcoinNodeAdapter(NodeAdapter):
         result = await super().post(*args, **kwargs)
         return cast(dict, result["result"])
 
-    async def post_list(self, *args, **kwargs) -> Iterable[Dict]:
+    async def post_multiple(self, *args, **kwargs) -> Iterable[Dict]:
         result = await super().post(*args, **kwargs)
         for item in result:
             yield item
