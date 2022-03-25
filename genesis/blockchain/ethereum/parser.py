@@ -1,6 +1,16 @@
 from decimal import Decimal
 from typing import ClassVar
 
+from genesis.blockchain.ethereum.constants import (
+    INPUT_ERC20_ADDRESS_LENGTH,
+    INPUT_ERC20_ADDRESS_OFFSET,
+    INPUT_ERC20_AMOUNT_OFFSET,
+    INPUT_ERC20_TRANSFER_PREFIX,
+)
+from genesis.blockchain_currencies import BLOCKCHAIN_CURRENCIES
+
+ERC20_ADDRESS_OFFSET = len(INPUT_ERC20_TRANSFER_PREFIX) + INPUT_ERC20_ADDRESS_OFFSET
+
 from genesis.blockchain.ethereum.adapter import EthereumNodeAdapter
 from genesis.blockchain.parser import Parser
 from genesis.constants import BlockchainName, CurrencySymbol
@@ -37,3 +47,17 @@ class EthereumParser(Parser):
             amount=amount,
             currency_symbol=CurrencySymbol.ETH,
         )
+
+    async def is_erc20_transfer(self, raw_transaction: dict) -> bool:
+        return raw_transaction["input"].startswith(INPUT_ERC20_TRANSFER_PREFIX)
+
+    async def parse_erc20_recipient(self, raw_transaction: dict) -> bool:
+        address_without_prefix = raw_transaction["input"][INPUT_ERC20_ADDRESS_OFFSET:INPUT_ERC20_ADDRESS_LENGTH]
+        return f"0x{address_without_prefix}"
+
+    async def parse_erc20_amount(self, raw_transaction: dict) -> bool:
+        amount_hex = raw_transaction["input"][INPUT_ERC20_AMOUNT_OFFSET:]
+        return Decimal(int(amount_hex, 16))
+
+    async def scale_erc20_amount(self, currency: CurrencySymbol, value: Decimal) -> Decimal:
+        return value * BLOCKCHAIN_CURRENCIES[self.BLOCKCHAIN][currency]["scaling"]
