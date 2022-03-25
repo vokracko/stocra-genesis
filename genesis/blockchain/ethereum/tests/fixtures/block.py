@@ -26,5 +26,5 @@ BLOCK_JSON = {
 BLOCK_DECODED = PlainBlock(
     height=100,
     hash="0xdfe2e70d6c116a541101cecbb256d7402d62125f6ddc9b607d49edc989825c64",
-    timestamp_ms=1438270443,
+    timestamp_ms=1438270443000,
 )

@@ -38,31 +38,17 @@ def parser(adapter: EthereumNodeAdapter) -> EthereumParser:
     return EthereumParser(adapter)
 
 
-# @pytest.mark.asyncio
-# async def test_decode_block(parser: EthereumParser) -> None:
-#     from genesis.blockchain.ethereum.tests.fixtures.block import (
-#         BLOCK_DECODED,
-#         BLOCK_JSON,
-#     )
-#
-#     decoded_transaction = await parser.decode_block(BLOCK_JSON)
-#     assert decoded_transaction == BLOCK_DECODED
-#
-#
-# @pytest.mark.asyncio
-# async def test_decode_coinbase_transaction(parser: EthereumParser) -> None:
-#     raise NotImplementedError
-#
+@pytest.mark.asyncio
+async def test_decode_block(parser: EthereumParser) -> None:
+    from genesis.blockchain.ethereum.tests.fixtures.block import (
+        BLOCK_DECODED,
+        BLOCK_JSON,
+    )
 
-#     from nodes.bitcoin.tests.fixtures.coinbase_transaction import (
-#         TRANSACTION_DECODED,
-#         TRANSACTION_JSON,
-#     )
-#
-#     decoded_transaction = await parser.decode_transaction(TRANSACTION_JSON)
-#     assert decoded_transaction == TRANSACTION_DECODED
+    decoded_transaction = await parser.decode_block(BLOCK_JSON)
+    assert decoded_transaction == BLOCK_DECODED
 
-#
+
 @pytest.mark.asyncio
 async def test_decode_transaction(parser: EthereumParser) -> None:
     flexmock(parser.node_adapter).should_receive("get_transaction_receipt").and_return(

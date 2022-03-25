@@ -27,7 +27,7 @@ class EthereumParser(Parser):
         return PlainBlock(
             height=int(raw_block["number"], 16),
             hash=raw_block["hash"],
-            timestamp_ms=int(raw_block["timestamp"], 16),
+            timestamp_ms=int(raw_block["timestamp"], 16) * 1_000,
             transactions=raw_block["transactions"],
         )
 
