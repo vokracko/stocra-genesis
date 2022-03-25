@@ -1,9 +1,26 @@
 from decimal import Decimal
 
 import pytest
+from flexmock import flexmock
 
 from genesis.blockchain.ethereum.adapter import EthereumNodeAdapter
 from genesis.blockchain.ethereum.parser import EthereumParser
+from genesis.blockchain.ethereum.tests.fixtures.transaction import (
+    TRANSACTION_DECODED,
+    TRANSACTION_JSON,
+)
+from genesis.blockchain.ethereum.tests.fixtures.transaction_erc20 import (
+    ERC20_ADDRESS,
+    ERC20_AMOUNT,
+    ERC20_AMOUNT_SCALED,
+    ERC20_TRANSACTION_JSON,
+)
+from genesis.blockchain.ethereum.tests.fixtures.transaction_receipt import (
+    TRANSACTION_RECEIPT_GAS_PRICE,
+    TRANSACTION_RECEIPT_GAS_USED,
+    TRANSACTION_RECEIPT_JSON,
+)
+from genesis.blockchain.tests.utils import AwaitableValue
 from genesis.constants import CurrencySymbol
 
 
@@ -42,24 +59,13 @@ def parser(adapter: EthereumNodeAdapter) -> EthereumParser:
 #     assert decoded_transaction == TRANSACTION_DECODED
 
 #
-# @pytest.mark.asyncio
-# async def test_decode_transaction(parser: EthereumParser) -> None:
-#     from genesis.blockchain.ethereum.tests.fixtures.transaction import (
-#         TRANSACTION_DECODED,
-#         TRANSACTION_JSON,
-#     )
-#
-#     decoded_transaction = await parser.decode_transaction(TRANSACTION_JSON, decode_inputs=False)
-#     assert decoded_transaction == TRANSACTION_DECODED
-
-
-from genesis.blockchain.ethereum.tests.fixtures.transaction import TRANSACTION_JSON
-from genesis.blockchain.ethereum.tests.fixtures.transaction_erc20 import (
-    ERC20_ADDRESS,
-    ERC20_AMOUNT,
-    ERC20_AMOUNT_SCALED,
-    ERC20_TRANSACTION_JSON,
-)
+@pytest.mark.asyncio
+async def test_decode_transaction(parser: EthereumParser) -> None:
+    flexmock(parser.node_adapter).should_receive("get_transaction_receipt").and_return(
+        AwaitableValue(TRANSACTION_RECEIPT_JSON)
+    )
+    decoded_transaction = await parser.decode_transaction(TRANSACTION_JSON, decode_inputs=False)
+    assert decoded_transaction == TRANSACTION_DECODED
 
 
 @pytest.mark.asyncio
@@ -110,4 +116,28 @@ async def test_scale_erc20_amount(
     parser: EthereumParser, currency: CurrencySymbol, amount: Decimal, expected_result: Decimal
 ) -> None:
     result = await parser.scale_erc20_amount(currency, amount)
+    assert result == expected_result
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "raw_receipt, expected_result",
+    [
+        (TRANSACTION_RECEIPT_JSON, TRANSACTION_RECEIPT_GAS_USED),
+    ],
+)
+async def test_parse_gas_used(parser: EthereumParser, raw_receipt: dict, expected_result: Decimal) -> None:
+    result = await parser.parse_gas_used(raw_receipt)
+    assert result == expected_result
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "raw_receipt, expected_result",
+    [
+        (TRANSACTION_RECEIPT_JSON, TRANSACTION_RECEIPT_GAS_PRICE),
+    ],
+)
+async def test_parse_gas_price(parser: EthereumParser, raw_receipt: dict, expected_result: Decimal) -> None:
+    result = await parser.parse_gas_price(raw_receipt)
     assert result == expected_result
