@@ -3,6 +3,7 @@ from typing import Optional, cast
 from aiohttp import ClientResponse
 
 from genesis.blockchain.adapter import NodeAdapter
+from genesis.blockchain.exceptions import DoesNotExist
 from genesis.constants import BlockchainName
 from genesis.encoders import fast_deserialize_response
 
@@ -58,10 +59,19 @@ class EthereumNodeAdapter(NodeAdapter):
 
     async def post(self, *args, **kwargs) -> dict:
         result = await super().post(*args, **kwargs)
+        print(f"{result}")
         return cast(dict, result["result"])
 
     @staticmethod
     async def _get_json_or_raise_response_error_aiohttp(response: ClientResponse) -> dict:
-        # TODO handle error cases
         result = await fast_deserialize_response(response)
+        # TODO test busy, not responding, timeout, crashed
+        if "error" in result:
+            error = result["error"]
+            if error["code"] == -32602:
+                raise DoesNotExist(error["message"])
+
+        if result["result"] is None:
+            raise DoesNotExist()
+
         return result
