@@ -4,6 +4,7 @@ from aiohttp import ClientResponse
 
 from genesis.blockchain.adapter import NodeAdapter
 from genesis.constants import BlockchainName
+from genesis.encoders import fast_deserialize_response
 
 
 class EthereumNodeAdapter(NodeAdapter):
@@ -55,8 +56,12 @@ class EthereumNodeAdapter(NodeAdapter):
     def headers(self) -> dict:
         return {}
 
+    async def post(self, *args, **kwargs) -> dict:
+        result = await super().post(*args, **kwargs)
+        return cast(dict, result["result"])
+
     @staticmethod
     async def _get_json_or_raise_response_error_aiohttp(response: ClientResponse) -> dict:
-        response.raise_for_status()
-        result = await response.json()
-        return cast(dict, result)
+        # TODO handle error cases
+        result = await fast_deserialize_response(response)
+        return result
