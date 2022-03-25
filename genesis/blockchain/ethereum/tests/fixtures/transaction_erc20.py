@@ -1,5 +1,8 @@
 from decimal import Decimal
 
+from genesis.constants import CurrencySymbol
+from genesis.models import PlainInput, PlainOutput, PlainTransaction
+
 ERC20_TRANSACTION_JSON = {
     "blockHash": "0x6fdb4caf69ebd6abd484e558c04cd46a901a7da88e8e3bfa357e574fb9053680",
     "blockNumber": "0xdc8f86",
@@ -21,3 +24,23 @@ ERC20_TRANSACTION_JSON = {
 ERC20_ADDRESS = "0x86e1e40f557cafbd792330fa69fa5e32e95f8f42"
 ERC20_AMOUNT = Decimal("3880000")
 ERC20_AMOUNT_SCALED = Decimal("3.88")
+
+ERC20_FEE_SCALED = Decimal("0.003286244")
+ERC20_TRANSACTION_DECODED = PlainTransaction(
+    hash="0x6a85deb137f805512e34babb8780200f5307fb50e9b8f6614446126469a82a9c",
+    inputs=[
+        PlainInput(
+            address="0x5041ed759dd4afc3a72b8192c143f72f4724081a",
+            amount=ERC20_AMOUNT_SCALED + ERC20_FEE_SCALED,
+        )
+    ],
+    outputs=[
+        PlainOutput(
+            address="0x86e1e40f557cafbd792330fa69fa5e32e95f8f42",
+            amount=ERC20_AMOUNT_SCALED,
+        ),
+    ],
+    amount=ERC20_AMOUNT_SCALED,
+    fee=ERC20_FEE_SCALED,
+    currency_symbol=CurrencySymbol.USDT,
+)

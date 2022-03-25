@@ -13,12 +13,16 @@ from genesis.blockchain.ethereum.tests.fixtures.transaction_erc20 import (
     ERC20_ADDRESS,
     ERC20_AMOUNT,
     ERC20_AMOUNT_SCALED,
+    ERC20_TRANSACTION_DECODED,
     ERC20_TRANSACTION_JSON,
 )
 from genesis.blockchain.ethereum.tests.fixtures.transaction_receipt import (
     TRANSACTION_RECEIPT_GAS_PRICE,
     TRANSACTION_RECEIPT_GAS_USED,
     TRANSACTION_RECEIPT_JSON,
+)
+from genesis.blockchain.ethereum.tests.fixtures.transaction_receipt_erc20 import (
+    ERC20_TRANSACTION_RECEIPT_JSON,
 )
 from genesis.blockchain.tests.utils import AwaitableValue
 from genesis.constants import CurrencySymbol
@@ -66,6 +70,15 @@ async def test_decode_transaction(parser: EthereumParser) -> None:
     )
     decoded_transaction = await parser.decode_transaction(TRANSACTION_JSON, decode_inputs=False)
     assert decoded_transaction == TRANSACTION_DECODED
+
+
+@pytest.mark.asyncio
+async def test_decode_erc20_transaction(parser: EthereumParser) -> None:
+    flexmock(parser.node_adapter).should_receive("get_transaction_receipt").and_return(
+        AwaitableValue(ERC20_TRANSACTION_RECEIPT_JSON)
+    )
+    decoded_transaction = await parser.decode_transaction(ERC20_TRANSACTION_JSON, decode_inputs=False)
+    assert decoded_transaction == ERC20_TRANSACTION_DECODED
 
 
 @pytest.mark.asyncio

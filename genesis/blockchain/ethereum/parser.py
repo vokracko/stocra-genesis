@@ -16,7 +16,7 @@ from genesis.models import PlainBlock, PlainInput, PlainOutput, PlainTransaction
 
 class EthereumParser(Parser):
     BLOCKCHAIN = BlockchainName.ETHEREUM
-    CURRENCY: ClassVar[CurrencySymbol] = CurrencySymbol.ETH
+    CURRENCY_SYMBOL: ClassVar[CurrencySymbol] = CurrencySymbol.ETH
     node_adapter: EthereumNodeAdapter
     SCALING_FACTOR = Decimal("1e-18")
 
@@ -36,9 +36,17 @@ class EthereumParser(Parser):
         gas_used = await self.parse_gas_used(receipt)
         gas_price = await self.parse_gas_price(receipt)
         fee = gas_used * gas_price * self.SCALING_FACTOR
-        amount = Decimal(int(raw_transaction["value"], 16)) * self.SCALING_FACTOR
 
-        # TODO add case to parse erc20 transaction
+        if await self.is_erc20_transfer(raw_transaction):
+            currency_symbol = await self.parse_erc20_currency_symbol(raw_transaction)
+            raw_amount = await self.parse_erc20_amount(raw_transaction)
+            amount = await self.scale_erc20_amount(currency_symbol, raw_amount)
+            output_address = await self.parse_erc20_recipient(raw_transaction)
+        else:
+            currency_symbol = self.CURRENCY_SYMBOL
+            amount = Decimal(int(raw_transaction["value"], 16)) * self.SCALING_FACTOR
+            output_address = raw_transaction["to"]
+
         # TODO make sure that  erc20 transaction is successful
         # TODO handle case of contract that is not supported
 
@@ -50,7 +58,7 @@ class EthereumParser(Parser):
         ]
         outputs = [
             PlainOutput(
-                address=raw_transaction["to"],
+                address=output_address,
                 amount=amount,
             ),
         ]
@@ -60,11 +68,19 @@ class EthereumParser(Parser):
             outputs=outputs,
             fee=fee,
             amount=amount,
-            currency_symbol=CurrencySymbol.ETH,
+            currency_symbol=currency_symbol,
         )
 
     async def is_erc20_transfer(self, raw_transaction: dict) -> bool:
         return raw_transaction["input"].startswith(INPUT_ERC20_TRANSFER_PREFIX)
+
+    async def parse_erc20_currency_symbol(self, raw_transaction: dict) -> CurrencySymbol:
+        for currency_symbol, currency_info in BLOCKCHAIN_CURRENCIES[self.BLOCKCHAIN].items():
+            if not currency_info:
+                continue
+
+            if currency_info["address"] == raw_transaction["to"]:
+                return currency_symbol
 
     async def parse_erc20_recipient(self, raw_transaction: dict) -> str:
         address_without_prefix = raw_transaction["input"][INPUT_ERC20_ADDRESS_OFFSET:INPUT_ERC20_ADDRESS_LENGTH]
