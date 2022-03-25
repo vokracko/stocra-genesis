@@ -51,7 +51,18 @@ class EthereumNodeAdapter(NodeAdapter):
         return await self.post(data)
 
     async def get_block_latest(self, *, include_transactions: bool) -> dict:
-        raise NotImplementedError
+        block_height = await self.get_block_count()
+        return await self.get_block_by_height(block_height, include_transactions=include_transactions)
+
+    async def get_block_count(self) -> int:
+        data = dict(
+            jsonrpc="2.0",
+            method="eth_blockNumber",
+            params=[],
+            id=1,
+        )
+        result = await self.post(data)
+        return int(result, 16)
 
     @property
     def headers(self) -> dict:
@@ -59,7 +70,6 @@ class EthereumNodeAdapter(NodeAdapter):
 
     async def post(self, *args, **kwargs) -> dict:
         result = await super().post(*args, **kwargs)
-        print(f"{result}")
         return cast(dict, result["result"])
 
     @staticmethod
