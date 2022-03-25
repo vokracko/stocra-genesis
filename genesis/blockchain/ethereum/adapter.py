@@ -18,6 +18,15 @@ class EthereumNodeAdapter(NodeAdapter):
         )
         return await self.post(data)
 
+    async def get_transaction_receipt(self, transaction_hash: str) -> dict:
+        data = dict(
+            jsonrpc="2.0",
+            method="eth_getTransactionReceipt",
+            params=[transaction_hash],
+            id=1,
+        )
+        return await self.post(data)
+
     async def get_block_by_hash(self, block_hash: str, *, include_transactions: bool) -> dict:
         data = dict(
             jsonrpc="2.0",
