@@ -31,7 +31,7 @@ ERC20_TRANSACTION_DECODED = PlainTransaction(
     inputs=[
         PlainInput(
             address="0x5041ed759dd4afc3a72b8192c143f72f4724081a",
-            amount=ERC20_AMOUNT_SCALED + ERC20_FEE_SCALED,
+            amount=ERC20_AMOUNT_SCALED,
         )
     ],
     outputs=[

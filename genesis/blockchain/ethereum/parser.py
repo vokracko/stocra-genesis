@@ -53,7 +53,7 @@ class EthereumParser(Parser):
         inputs = [
             PlainInput(
                 address=raw_transaction["from"],
-                amount=amount + fee,
+                amount=amount,
             ),
         ]
         outputs = [

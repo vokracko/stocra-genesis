@@ -26,7 +26,7 @@ TRANSACTION_DECODED = PlainTransaction(
     inputs=[
         PlainInput(
             address="0x18916e1a2933cb349145a280473a5de8eb6630cb",
-            amount=Decimal("0.00903"),
+            amount=Decimal("0.007455"),
         )
     ],
     outputs=[
