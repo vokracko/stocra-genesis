@@ -1,13 +1,14 @@
-from typing import ClassVar
+from typing import ClassVar, Dict
 
 from genesis.blockchain.adapter import NodeAdapter
-from genesis.constants import BlockchainName, CurrencySymbol
+from genesis.constants import BlockchainName, Currency
 from genesis.models import PlainBlock, PlainTransaction
 
 
 class Parser:
     BLOCKCHAIN: ClassVar[BlockchainName]
-    CURRENCY_SYMBOL: ClassVar[CurrencySymbol]
+    CURRENCY: ClassVar[Currency]
+    TOKENS: ClassVar[Dict] = dict()
     node_adapter: NodeAdapter
 
     def __init__(self, node_adapter: NodeAdapter) -> None:

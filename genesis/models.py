@@ -3,8 +3,6 @@ from typing import List, Optional
 
 from pydantic import BaseModel, root_validator, validator
 
-from genesis.constants import CurrencySymbol
-
 PlainAddress = str
 PlainTransactionHash = str
 PlainOutputIndex = int
@@ -39,7 +37,7 @@ class PlainTransaction(BaseModel):
     outputs: List[PlainOutput]
     amount: Decimal
     fee: Decimal
-    currency_symbol: CurrencySymbol
+    currency_symbol: str
 
 
 class PlainBlock(BaseModel):
@@ -55,3 +53,13 @@ class PlainBlock(BaseModel):
             raise ValueError("Timestamp must be in miliseconds")
 
         return value
+
+
+class CurrencyInfo(BaseModel):
+    symbol: str
+    name: str
+
+
+class TokenInfo(BaseModel):
+    currency: CurrencyInfo
+    scaling: Decimal

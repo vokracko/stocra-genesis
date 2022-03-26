@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from genesis.constants import CurrencySymbol
+from genesis.constants import Currency
 from genesis.models import PlainInput, PlainOutput, PlainTransaction
 
 TRANSACTION_JSON = {
@@ -37,5 +37,5 @@ TRANSACTION_DECODED = PlainTransaction(
     ],
     amount=Decimal("0.007455"),
     fee=Decimal("0.001575"),
-    currency_symbol=CurrencySymbol.ETH,
+    currency_symbol=Currency.ETHER.symbol,
 )
