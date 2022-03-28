@@ -2,8 +2,6 @@ from decimal import Decimal
 
 import pytest
 from flexmock import flexmock
-from genesis.blockchain.ethereum.tests.fixtures.transaction_erc20_unknown import ERC20_TRANSACTION_UNKNOWN_JSON, \
-    ERC20_TRANSACTION_UNKNOWN_DECODED
 
 from genesis.blockchain.ethereum.adapter import EthereumNodeAdapter
 from genesis.blockchain.ethereum.parser import EthereumParser
@@ -17,6 +15,10 @@ from genesis.blockchain.ethereum.tests.fixtures.transaction_erc20 import (
     ERC20_AMOUNT_SCALED,
     ERC20_TRANSACTION_DECODED,
     ERC20_TRANSACTION_JSON,
+)
+from genesis.blockchain.ethereum.tests.fixtures.transaction_erc20_unknown import (
+    ERC20_TRANSACTION_UNKNOWN_DECODED,
+    ERC20_TRANSACTION_UNKNOWN_JSON,
 )
 from genesis.blockchain.ethereum.tests.fixtures.transaction_receipt import (
     TRANSACTION_RECEIPT_GAS_PRICE,

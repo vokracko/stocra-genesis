@@ -18,6 +18,9 @@ class PlainInput(BaseModel):
     amount: Optional[Decimal] = None
     transaction_pointer: Optional[PlainTransactionPointer] = None
 
+    class Config:
+        json_encoders = {Decimal: str}
+
     @root_validator
     def validate_address_or_pointer(cls, values) -> None:  # pylint: disable=no-self-argument
         if not (values["address"] or values["transaction_pointer"]):
@@ -30,6 +33,9 @@ class PlainOutput(BaseModel):
     address: PlainAddress
     amount: Decimal
 
+    class Config:
+        json_encoders = {Decimal: str}
+
 
 class PlainTransaction(BaseModel):
     hash: PlainTransactionHash
@@ -38,6 +44,9 @@ class PlainTransaction(BaseModel):
     amount: Decimal
     fee: Decimal
     currency_symbol: str
+
+    class Config:
+        json_encoders = {Decimal: str}
 
 
 class PlainBlock(BaseModel):
@@ -63,3 +72,6 @@ class CurrencyInfo(BaseModel):
 class TokenInfo(BaseModel):
     currency: CurrencyInfo
     scaling: Decimal
+
+    class Config:
+        json_encoders = {Decimal: str}
