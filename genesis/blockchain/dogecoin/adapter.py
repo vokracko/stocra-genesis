@@ -7,7 +7,7 @@ from genesis.blockchains import Blockchain
 class DogecoinNodeAdapter(LitecoinNodeAdapter):
     BLOCKCHAIN: ClassVar[Blockchain] = Blockchain.DOGECOIN
 
-    async def get_block_by_hash(self, block_hash: str, *, include_transactions: bool) -> dict:
+    async def get_block_by_hash(self, block_hash: str) -> dict:
         data = dict(
             method="getblock",
             params=[block_hash, True],

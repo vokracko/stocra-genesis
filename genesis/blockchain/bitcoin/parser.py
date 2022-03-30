@@ -32,7 +32,6 @@ class BitcoinParser(Parser):
         super().__init__(node_adapter)
 
     async def decode_block(self, raw_block: dict) -> PlainBlock:
-        # transactions = await self.decode_transactions(raw_block)
         return PlainBlock(
             height=raw_block["height"],
             hash=raw_block["hash"],

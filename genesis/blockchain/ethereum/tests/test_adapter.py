@@ -35,17 +35,16 @@ async def test_get_transaction(adapter: EthereumNodeAdapter) -> None:
     assert transaction == 42
 
 
-@pytest.mark.parametrize("include_transactions", [True, False])
 @pytest.mark.asyncio
-async def test_get_block_by_hash(adapter: EthereumNodeAdapter, include_transactions: bool) -> None:
+async def test_get_block_by_hash(adapter: EthereumNodeAdapter) -> None:
     with aioresponses() as mocker:
         mocker.post(NODE_URL, payload=dict(result=42))
-        block = await adapter.get_block_by_hash("hash", include_transactions=include_transactions)
+        block = await adapter.get_block_by_hash("hash")
         request_kwargs = CalledRequests(mocker.requests).get_request_kwargs(0)
         assert request_kwargs["json"] == dict(
             jsonrpc="2.0",
             method="eth_getBlockByHash",
-            params=["hash", include_transactions],
+            params=["hash", False],
             id=1,
         )
 
@@ -58,17 +57,16 @@ async def test_get_block_hash(adapter: EthereumNodeAdapter) -> None:
         await adapter.get_block_hash(420)
 
 
-@pytest.mark.parametrize("include_transactions", [True, False])
 @pytest.mark.asyncio
-async def test_get_block_by_height(adapter: EthereumNodeAdapter, include_transactions: bool) -> None:
+async def test_get_block_by_height(adapter: EthereumNodeAdapter) -> None:
     with aioresponses() as mocker:
         mocker.post(NODE_URL, payload=dict(result=42))
-        block = await adapter.get_block_by_height(420, include_transactions=include_transactions)
+        block = await adapter.get_block_by_height(420)
         request_kwargs = CalledRequests(mocker.requests).get_request_kwargs(0)
         assert request_kwargs["json"] == dict(
             jsonrpc="2.0",
             method="eth_getBlockByNumber",
-            params=["0x1a4", include_transactions],
+            params=["0x1a4", False],
             id=1,
         )
 

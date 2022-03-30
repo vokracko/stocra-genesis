@@ -29,11 +29,11 @@ class EthereumNodeAdapter(NodeAdapter):
         )
         return await self.post(data)
 
-    async def get_block_by_hash(self, block_hash: str, *, include_transactions: bool) -> dict:
+    async def get_block_by_hash(self, block_hash: str) -> dict:
         data = dict(
             jsonrpc="2.0",
             method="eth_getBlockByHash",
-            params=[block_hash, include_transactions],
+            params=[block_hash, False],
             id=1,
         )
         return await self.post(data)
@@ -41,18 +41,18 @@ class EthereumNodeAdapter(NodeAdapter):
     async def get_block_hash(self, height: int) -> str:
         raise NotImplementedError
 
-    async def get_block_by_height(self, height: int, *, include_transactions: bool = True) -> dict:
+    async def get_block_by_height(self, height: int) -> dict:
         data = dict(
             jsonrpc="2.0",
             method="eth_getBlockByNumber",
-            params=[hex(height), include_transactions],
+            params=[hex(height), False],
             id=1,
         )
         return await self.post(data)
 
-    async def get_block_latest(self, *, include_transactions: bool) -> dict:
+    async def get_block_latest(self) -> dict:
         block_height = await self.get_block_count()
-        return await self.get_block_by_height(block_height, include_transactions=include_transactions)
+        return await self.get_block_by_height(block_height)
 
     async def get_block_count(self) -> int:
         data = dict(

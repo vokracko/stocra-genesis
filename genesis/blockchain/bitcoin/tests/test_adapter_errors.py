@@ -20,7 +20,7 @@ async def test_get_block_by_hash_invalid_hash_number(adapter: BitcoinNodeAdapter
                 payload=dict(error=dict(code=-1, message="JSON value is not a string as expected")),
                 status=500,
             )
-            await adapter.get_block_by_hash(1_000_000, include_transactions=False)
+            await adapter.get_block_by_hash(1_000_000)
 
 
 @pytest.mark.asyncio
@@ -34,7 +34,7 @@ async def test_get_block_by_hash_invalid_hash_string_nonsence(adapter: BitcoinNo
                 ),
                 status=500,
             )
-            await adapter.get_block_by_hash("invalidhashstring", include_transactions=False)
+            await adapter.get_block_by_hash("invalidhashstring")
 
 
 @pytest.mark.asyncio
@@ -42,9 +42,7 @@ async def test_get_block_by_hash_invalid_hash_string_not_bitcoin_block_hash(adap
     with aioresponses() as mocker:
         with pytest.raises(DoesNotExist):
             mocker.post(NODE_URL, payload=dict(error=dict(code=-5, message="Block not found")), status=500)
-            await adapter.get_block_by_hash(
-                "000000000000000003aba32e1cd5548f01aef6d4d5e27df7f6ced6d85fca52af", include_transactions=False
-            )
+            await adapter.get_block_by_hash("000000000000000003aba32e1cd5548f01aef6d4d5e27df7f6ced6d85fca52af")
 
 
 @pytest.mark.asyncio

@@ -20,15 +20,14 @@ async def test_get_transaction(adapter: BitcoinNodeAdapter, verbose: bool) -> No
     assert transaction == 42
 
 
-@pytest.mark.parametrize("include_transactions, verbosity", [(False, 1), (True, 2)])
 @pytest.mark.asyncio
-async def test_get_block_by_hash(adapter: BitcoinNodeAdapter, include_transactions, verbosity: int) -> None:
+async def test_get_block_by_hash(adapter: BitcoinNodeAdapter) -> None:
     with aioresponses() as mocker:
         mocker.post(NODE_URL, payload=dict(result=42))
-        block = await adapter.get_block_by_hash("hash", include_transactions=include_transactions)
+        block = await adapter.get_block_by_hash("hash")
         request_kwargs = CalledRequests(mocker.requests).get_request_kwargs(0)
         assert request_kwargs["headers"] == EXPECTED_HEADERS
-        assert request_kwargs["json"] == dict(method="getblock", params=["hash", verbosity])
+        assert request_kwargs["json"] == dict(method="getblock", params=["hash", 1])
 
     assert block == 42
 
@@ -46,14 +45,11 @@ async def test_get_block_hash(adapter: BitcoinNodeAdapter) -> None:
     assert block_hash == "hash"
 
 
-@pytest.mark.parametrize("include_transactions", [True, False])
 @pytest.mark.asyncio
-async def test_get_block_by_height(adapter: BitcoinNodeAdapter, include_transactions: bool) -> None:
+async def test_get_block_by_height(adapter: BitcoinNodeAdapter) -> None:
     flexmock(adapter).should_receive("get_block_hash").with_args(420).and_return(AwaitableValue("hash")).once()
-    flexmock(adapter).should_receive("get_block_by_hash").with_args(
-        "hash", include_transactions=include_transactions
-    ).and_return(AwaitableValue(42)).once()
-    block = await adapter.get_block_by_height(420, include_transactions=include_transactions)
+    flexmock(adapter).should_receive("get_block_by_hash").with_args("hash").and_return(AwaitableValue(42)).once()
+    block = await adapter.get_block_by_height(420)
     assert block == 42
 
 
