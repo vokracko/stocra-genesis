@@ -12,7 +12,6 @@ from genesis.blockchain.ethereum.tests.fixtures.transaction import (
 from genesis.blockchain.ethereum.tests.fixtures.transaction_erc20 import (
     ERC20_ADDRESS,
     ERC20_AMOUNT,
-    ERC20_AMOUNT_SCALED,
     ERC20_TRANSACTION_DECODED,
     ERC20_TRANSACTION_JSON,
 )
@@ -29,7 +28,6 @@ from genesis.blockchain.ethereum.tests.fixtures.transaction_receipt_erc20 import
     ERC20_TRANSACTION_RECEIPT_JSON,
 )
 from genesis.blockchain.tests.utils import AwaitableValue
-from genesis.constants import Currency
 
 
 @pytest.fixture

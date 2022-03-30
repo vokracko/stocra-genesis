@@ -8,7 +8,7 @@ from genesis.blockchain.ethereum.parser import EthereumParser
 from genesis.blockchain.litecoin.adapter import LitecoinNodeAdapter
 from genesis.blockchain.litecoin.parser import LitecoinParser
 from genesis.blockchain.parser import Parser
-from genesis.constants import BlockchainName
+from genesis.blockchains import Blockchain
 
 ADAPTERS = {
     BitcoinNodeAdapter.BLOCKCHAIN: BitcoinNodeAdapter,
@@ -26,11 +26,11 @@ PARSERS = {
 
 class NodeAdapterFactory:
     @classmethod
-    def get_client(cls, blockchain: BlockchainName, *args: str, **kwargs: str) -> NodeAdapter:
+    def get_client(cls, blockchain: Blockchain, *args: str, **kwargs: str) -> NodeAdapter:
         return ADAPTERS[blockchain](*args, **kwargs)
 
 
 class ParserFactory:
     @classmethod
-    def get_parser(cls, blockchain: BlockchainName, adapter: NodeAdapter) -> Parser:
+    def get_parser(cls, blockchain: Blockchain, adapter: NodeAdapter) -> Parser:
         return PARSERS[blockchain](adapter)

@@ -12,7 +12,8 @@ from genesis.blockchain.ethereum.constants import (
 )
 from genesis.blockchain.ethereum.tokens import TOKENS
 from genesis.blockchain.parser import Parser
-from genesis.constants import BlockchainName, Currency
+from genesis.blockchains import Blockchain
+from genesis.currencies import Currency
 from genesis.models import (
     CurrencyInfo,
     PlainBlock,
@@ -26,7 +27,7 @@ logger = get_logger(__name__)
 
 
 class EthereumParser(Parser):
-    BLOCKCHAIN = BlockchainName.ETHEREUM
+    BLOCKCHAIN = Blockchain.ETHEREUM
     CURRENCY: ClassVar[Currency] = Currency.ETHER
     node_adapter: EthereumNodeAdapter
     TOKENS: ClassVar[Dict] = TOKENS

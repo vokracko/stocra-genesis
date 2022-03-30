@@ -1,16 +1,17 @@
 import pytest
 
-from genesis.constants import BlockchainName
+from genesis.blockchains import Blockchain
+from genesis.currencies import Currency
 
 
 def test_blockchain_name_choices() -> None:
     expected = set(
         [
-            ("BITCOIN", BlockchainName.BITCOIN.value),
-            ("ETHEREUM", BlockchainName.ETHEREUM.value),
+            ("BITCOIN", Blockchain.BITCOIN.value, Blockchain.BITCOIN),
+            ("ETHEREUM", Blockchain.ETHEREUM.value, Blockchain.ETHEREUM),
         ]
     )
-    assert expected.issubset(BlockchainName.choices()) is True
+    assert expected.issubset(Blockchain.choices()) is True
 
 
 @pytest.mark.parametrize(
@@ -21,20 +22,40 @@ def test_blockchain_name_choices() -> None:
     ],
 )
 def test_blockchain_name_exists(blockchain_name: str, exists: bool) -> None:
-    assert BlockchainName.exists(blockchain_name) is exists
+    assert Blockchain.exists(blockchain_name) is exists
 
 
 def test_blockchain_name_values() -> None:
-    expected = set([BlockchainName.BITCOIN.value, BlockchainName.ETHEREUM.value])
-    assert expected.issubset(BlockchainName.values()) is True
+    expected = set([Blockchain.BITCOIN.value, Blockchain.ETHEREUM.value])
+    assert expected.issubset(Blockchain.values()) is True
 
 
 @pytest.mark.parametrize(
     "blockchain_name, exists",
     [
-        (BlockchainName.BITCOIN.value, True),
+        (Blockchain.BITCOIN.value, True),
         ("nonexisting", False),
     ],
 )
 def test_blockchain_name_value_exists(blockchain_name: str, exists: bool) -> None:
-    assert BlockchainName.value_exists(blockchain_name) is exists
+    assert Blockchain.value_exists(blockchain_name) is exists
+
+
+@pytest.mark.parametrize("name, expected_result", [("Bitcoin", Currency.BITCOIN), ("Ether", Currency.ETHER)])
+def test_currency_from_name(name, expected_result):
+    assert Currency.from_name(name) == expected_result
+
+
+def test_currency_from_name_invalid():
+    with pytest.raises(ValueError):
+        Currency.from_name("nonexisting")
+
+
+@pytest.mark.parametrize("name, expected_result", [("bitcoin", Blockchain.BITCOIN), ("ethereum", Blockchain.ETHEREUM)])
+def test_blockchain_from_name(name, expected_result):
+    assert Blockchain.from_name(name) == expected_result
+
+
+def test_blockchain_from_name_invalid():
+    with pytest.raises(ValueError):
+        Blockchain.from_name("nonexisting")

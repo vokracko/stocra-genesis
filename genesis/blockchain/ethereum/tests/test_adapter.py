@@ -8,14 +8,14 @@ from genesis.blockchain.ethereum.adapter import EthereumNodeAdapter
 from genesis.blockchain.exceptions import DoesNotExist
 from genesis.blockchain.factory import NodeAdapterFactory
 from genesis.blockchain.tests.utils import AwaitableValue, CalledRequests
-from genesis.constants import BlockchainName
+from genesis.blockchains import Blockchain
 
 NODE_URL = "http://127.0.0.1:666/"
 
 
 @pytest.fixture
 def adapter() -> EthereumNodeAdapter:
-    client = NodeAdapterFactory.get_client(BlockchainName.ETHEREUM, url=NODE_URL)
+    client = NodeAdapterFactory.get_client(Blockchain.ETHEREUM, url=NODE_URL)
     return cast(EthereumNodeAdapter, client)
 
 

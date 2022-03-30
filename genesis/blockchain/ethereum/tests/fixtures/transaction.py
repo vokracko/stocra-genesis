@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from genesis.constants import Currency
+from genesis.currencies import Currency
 from genesis.models import PlainInput, PlainOutput, PlainTransaction
 
 TRANSACTION_JSON = {

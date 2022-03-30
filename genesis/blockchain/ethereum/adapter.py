@@ -1,15 +1,15 @@
-from typing import Optional, cast
+from typing import cast
 
 from aiohttp import ClientResponse
 
 from genesis.blockchain.adapter import NodeAdapter
 from genesis.blockchain.exceptions import DoesNotExist
-from genesis.constants import BlockchainName
+from genesis.blockchains import Blockchain
 from genesis.encoders import fast_deserialize_response
 
 
 class EthereumNodeAdapter(NodeAdapter):
-    BLOCKCHAIN = BlockchainName.ETHEREUM
+    BLOCKCHAIN = Blockchain.ETHEREUM
 
     async def get_transaction(self, transaction_hash: str) -> dict:
         data = dict(

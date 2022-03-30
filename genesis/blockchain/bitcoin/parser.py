@@ -9,7 +9,8 @@ import logging518 as logging
 from genesis.blockchain.bitcoin.adapter import BitcoinNodeAdapter
 from genesis.blockchain.exceptions import UnknownScriptPubKey
 from genesis.blockchain.parser import Parser
-from genesis.constants import BlockchainName, Currency
+from genesis.blockchains import Blockchain
+from genesis.currencies import Currency
 from genesis.models import (
     PlainAddress,
     PlainBlock,
@@ -23,7 +24,7 @@ logger = logging.get_logger(__name__)
 
 
 class BitcoinParser(Parser):
-    BLOCKCHAIN: ClassVar[BlockchainName] = BlockchainName.BITCOIN
+    BLOCKCHAIN: ClassVar[Blockchain] = Blockchain.BITCOIN
     CURRENCY: ClassVar[Currency] = Currency.BITCOIN
     node_adapter: BitcoinNodeAdapter
 

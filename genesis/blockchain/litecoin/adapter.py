@@ -1,8 +1,8 @@
 from typing import ClassVar
 
 from genesis.blockchain.bitcoin.adapter import BitcoinNodeAdapter
-from genesis.constants import BlockchainName
+from genesis.blockchains import Blockchain
 
 
 class LitecoinNodeAdapter(BitcoinNodeAdapter):
-    BLOCKCHAIN: ClassVar[BlockchainName] = BlockchainName.LITECOIN
+    BLOCKCHAIN: ClassVar[Blockchain] = Blockchain.LITECOIN

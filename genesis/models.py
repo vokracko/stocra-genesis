@@ -3,6 +3,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel, root_validator, validator
 
+from genesis.blockchain_types import BlockchainType
+
 PlainAddress = str
 PlainTransactionHash = str
 PlainOutputIndex = int
@@ -68,6 +70,9 @@ class CurrencyInfo(BaseModel):
     symbol: str
     name: str
 
+    class Config:
+        frozen = True
+
 
 class TokenInfo(BaseModel):
     currency: CurrencyInfo
@@ -75,3 +80,12 @@ class TokenInfo(BaseModel):
 
     class Config:
         json_encoders = {Decimal: str}
+        frozen = True
+
+
+class BlockchainInfo(BaseModel):
+    name: str
+    type: BlockchainType
+
+    class Config:
+        frozen = True

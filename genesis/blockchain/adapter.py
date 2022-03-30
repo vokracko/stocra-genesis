@@ -1,16 +1,16 @@
 import asyncio
-from typing import ClassVar, Dict, List, Optional, Union
+from typing import ClassVar, Dict, List, Union
 
 import aiohttp
-from aiohttp import ClientConnectorError, ClientResponse
+from aiohttp import ClientError, ClientResponse
 
 from genesis.blockchain.exceptions import Unavailable
-from genesis.constants import BlockchainName
+from genesis.blockchains import Blockchain
 from genesis.encoders import fast_serializer_to_str
 
 
 class NodeAdapter:
-    BLOCKCHAIN: ClassVar[BlockchainName]
+    BLOCKCHAIN: ClassVar[Blockchain]
 
     url: str
     token: str
@@ -50,7 +50,7 @@ class NodeAdapter:
         try:
             async with self.session.post(self.url, json=data, headers=self.headers) as response:
                 return await self._get_json_or_raise_response_error_aiohttp(response)
-        except ClientConnectorError as exc:
+        except ClientError as exc:
             raise Unavailable("Node not available") from exc
 
     @staticmethod

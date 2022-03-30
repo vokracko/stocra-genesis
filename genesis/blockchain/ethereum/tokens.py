@@ -2,8 +2,7 @@
 
 from decimal import Decimal
 
-from genesis.constants import CurrencyInfo
-from genesis.models import TokenInfo
+from genesis.models import CurrencyInfo, TokenInfo
 
 TOKENS = {
     "0x0000000000004946c0e9f43f4dee607b0ef1fa1c": TokenInfo(

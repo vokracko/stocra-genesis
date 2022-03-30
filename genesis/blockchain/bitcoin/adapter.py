@@ -9,12 +9,12 @@ from genesis.blockchain.exceptions import (
     TooManyRequests,
     UnknownNodeException,
 )
-from genesis.constants import BlockchainName
+from genesis.blockchains import Blockchain
 from genesis.encoders import fast_deserialize_response
 
 
 class BitcoinNodeAdapter(NodeAdapter):
-    BLOCKCHAIN: ClassVar[BlockchainName] = BlockchainName.BITCOIN
+    BLOCKCHAIN: ClassVar[Blockchain] = Blockchain.BITCOIN
 
     async def get_transactions(self, transaction_hashes: List[str], *, verbose: bool = True) -> Iterable[dict]:
         data = [
