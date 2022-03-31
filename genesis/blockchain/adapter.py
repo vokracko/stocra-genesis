@@ -19,6 +19,8 @@ class NodeAdapter:
     def __init__(self, url: str, token: str) -> None:
         self.url = url
         self.token = token
+
+    async def init_session(self):
         self.session = aiohttp.ClientSession(json_serialize=fast_serializer_to_str)
 
     async def get_transactions(self, transaction_hashes: List[str], *, verbose: bool = True) -> List[dict]:

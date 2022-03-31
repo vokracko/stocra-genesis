@@ -1,22 +1,11 @@
-from typing import cast
-
 import pytest
 from aioresponses import aioresponses
-from flexmock import flexmock
 
 from genesis.blockchain.ethereum.adapter import EthereumNodeAdapter
 from genesis.blockchain.exceptions import DoesNotExist
-from genesis.blockchain.factory import NodeAdapterFactory
-from genesis.blockchain.tests.utils import AwaitableValue, CalledRequests
-from genesis.blockchains import Blockchain
+from genesis.blockchain.tests.utils import CalledRequests
 
 NODE_URL = "http://127.0.0.1:666/"
-
-
-@pytest.fixture
-def adapter() -> EthereumNodeAdapter:
-    client = NodeAdapterFactory.get_client(Blockchain.ETHEREUM, url=NODE_URL)
-    return cast(EthereumNodeAdapter, client)
 
 
 @pytest.mark.asyncio

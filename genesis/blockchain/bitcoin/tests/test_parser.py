@@ -1,12 +1,6 @@
 import pytest
 
-from genesis.blockchain.bitcoin.adapter import BitcoinNodeAdapter
 from genesis.blockchain.bitcoin.parser import BitcoinParser
-
-
-@pytest.fixture
-def parser(adapter: BitcoinNodeAdapter) -> BitcoinParser:
-    return BitcoinParser(adapter)
 
 
 @pytest.mark.asyncio

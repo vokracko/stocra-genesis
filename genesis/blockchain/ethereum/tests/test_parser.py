@@ -3,7 +3,6 @@ from decimal import Decimal
 import pytest
 from flexmock import flexmock
 
-from genesis.blockchain.ethereum.adapter import EthereumNodeAdapter
 from genesis.blockchain.ethereum.parser import EthereumParser
 from genesis.blockchain.ethereum.tests.fixtures.transaction import (
     TRANSACTION_DECODED,
@@ -28,16 +27,6 @@ from genesis.blockchain.ethereum.tests.fixtures.transaction_receipt_erc20 import
     ERC20_TRANSACTION_RECEIPT_JSON,
 )
 from genesis.blockchain.tests.utils import AwaitableValue
-
-
-@pytest.fixture
-def adapter() -> EthereumNodeAdapter:
-    return EthereumNodeAdapter(url="", token="")
-
-
-@pytest.fixture
-def parser(adapter: EthereumNodeAdapter) -> EthereumParser:
-    return EthereumParser(adapter)
 
 
 @pytest.mark.asyncio

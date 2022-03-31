@@ -26,11 +26,13 @@ PARSERS = {
 
 class NodeAdapterFactory:
     @classmethod
-    def get_client(cls, blockchain: Blockchain, *args: str, **kwargs: str) -> NodeAdapter:
-        return ADAPTERS[blockchain](*args, **kwargs)
+    async def get_client(cls, blockchain: Blockchain, *args: str, **kwargs: str) -> NodeAdapter:
+        client = ADAPTERS[blockchain](*args, **kwargs)
+        await client.init_session()
+        return client
 
 
 class ParserFactory:
     @classmethod
-    def get_parser(cls, blockchain: Blockchain, adapter: NodeAdapter) -> Parser:
+    async def get_parser(cls, blockchain: Blockchain, adapter: NodeAdapter) -> Parser:
         return PARSERS[blockchain](adapter)
