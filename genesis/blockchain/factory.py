@@ -28,7 +28,7 @@ class NodeAdapterFactory:
     @classmethod
     async def get_client(cls, blockchain: Blockchain, *args: str, **kwargs: str) -> NodeAdapter:
         client = ADAPTERS[blockchain](*args, **kwargs)
-        await client.init_session()
+        await client.init_async()
         return client
 
 
