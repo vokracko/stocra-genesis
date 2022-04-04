@@ -4,6 +4,7 @@ from typing import List, Optional
 from pydantic import BaseModel, root_validator, validator
 
 from genesis.blockchain_types import BlockchainType
+from genesis.token_types import TokenType
 
 PlainAddress = str
 PlainTransactionHash = str
@@ -77,6 +78,7 @@ class CurrencyInfo(BaseModel):
 class TokenInfo(BaseModel):
     currency: CurrencyInfo
     scaling: Decimal
+    type: TokenType
 
     class Config:
         json_encoders = {Decimal: str}
