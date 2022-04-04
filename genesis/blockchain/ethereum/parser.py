@@ -44,7 +44,7 @@ class EthereumParser(Parser):
             transactions=raw_block["transactions"],
         )
 
-    async def decode_transaction(self, raw_transaction: dict, *, decode_inputs: bool) -> PlainTransaction:
+    async def decode_transaction(self, raw_transaction: dict) -> PlainTransaction:
         receipt = await self.node_adapter.get_transaction_receipt(raw_transaction["hash"])
         gas_used = await self.parse_gas_used(receipt)
         gas_price = await self.parse_gas_price(receipt)
@@ -61,7 +61,6 @@ class EthereumParser(Parser):
             amount = Decimal(int(raw_transaction["value"], 16)) * self.SCALING_FACTOR
             output_address = raw_transaction["to"]
 
-        # TODO make sure that  erc20 transaction is successful
         # TODO handle case of contract that is not supported
 
         inputs = [

@@ -75,7 +75,6 @@ class EthereumNodeAdapter(NodeAdapter):
     @staticmethod
     async def _get_json_or_raise_response_error_aiohttp(response: ClientResponse) -> dict:
         result = await fast_deserialize_response(response)
-        # TODO test busy, not responding, timeout, crashed
         if "error" in result:
             error = result["error"]
             if error["code"] == -32602:

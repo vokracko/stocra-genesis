@@ -39,7 +39,7 @@ class BitcoinParser(Parser):
             transactions=raw_block["tx"],
         )
 
-    async def decode_transaction(self, raw_transaction: dict, *, decode_inputs: bool) -> PlainTransaction:
+    async def decode_transaction(self, raw_transaction: dict, *, decode_inputs: bool = True) -> PlainTransaction:
         fee = Decimal("0")
         outputs = await self.get_outputs_with_amounts_from_raw_transaction(raw_transaction)
         is_coinbase_transaction = await self._is_coinbase_transaction(raw_transaction)

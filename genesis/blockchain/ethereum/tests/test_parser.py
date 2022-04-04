@@ -45,7 +45,7 @@ async def test_decode_transaction(parser: EthereumParser) -> None:
     flexmock(parser.node_adapter).should_receive("get_transaction_receipt").and_return(
         AwaitableValue(TRANSACTION_RECEIPT_JSON)
     )
-    decoded_transaction = await parser.decode_transaction(TRANSACTION_JSON, decode_inputs=False)
+    decoded_transaction = await parser.decode_transaction(TRANSACTION_JSON)
     assert decoded_transaction == TRANSACTION_DECODED
 
 
@@ -54,7 +54,7 @@ async def test_decode_erc20_transaction(parser: EthereumParser) -> None:
     flexmock(parser.node_adapter).should_receive("get_transaction_receipt").and_return(
         AwaitableValue(ERC20_TRANSACTION_RECEIPT_JSON)
     )
-    decoded_transaction = await parser.decode_transaction(ERC20_TRANSACTION_JSON, decode_inputs=False)
+    decoded_transaction = await parser.decode_transaction(ERC20_TRANSACTION_JSON)
     assert decoded_transaction == ERC20_TRANSACTION_DECODED
 
 
@@ -63,7 +63,7 @@ async def test_decode_erc20_transaction_unknown_token(parser: EthereumParser) ->
     flexmock(parser.node_adapter).should_receive("get_transaction_receipt").and_return(
         AwaitableValue(ERC20_TRANSACTION_RECEIPT_JSON)
     )
-    decoded_transaction = await parser.decode_transaction(ERC20_TRANSACTION_UNKNOWN_JSON, decode_inputs=False)
+    decoded_transaction = await parser.decode_transaction(ERC20_TRANSACTION_UNKNOWN_JSON)
     assert decoded_transaction == ERC20_TRANSACTION_UNKNOWN_DECODED
 
 
