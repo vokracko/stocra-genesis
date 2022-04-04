@@ -8,6 +8,7 @@ from genesis.blockchain.parser import Parser
 from genesis.blockchains import Blockchain
 from genesis.currencies import Currency
 from genesis.models import (
+    Amount,
     PlainBlock,
     PlainInput,
     PlainOutput,
@@ -42,15 +43,17 @@ class CardanoParser(Parser):
         outputs = self._get_outputs_with_amounts_from_raw_transaction(raw_transaction["inputs_outputs"])
         inputs = self._get_inputs_from_raw_transaction(raw_transaction["inputs_outputs"])
         amount = self._get_total_amount_from_raw_transaction(outputs)
-        fee = sum([input_.amount for input_ in inputs]) - amount
+        fee = sum([input_.amount.value for input_ in inputs]) - amount
 
         return PlainTransaction(
             hash=raw_transaction["hash"],
             inputs=inputs,
             outputs=outputs,
-            amount=amount,
-            fee=fee,
-            currency_symbol=self.CURRENCY.symbol,
+            amount=Amount(
+                value=amount,
+                currency_symbol=self.CURRENCY.symbol,
+            ),
+            fee=Amount(value=fee, currency_symbol=self.CURRENCY.symbol),
         )
 
     def _get_inputs_from_raw_transaction(self, inputs_outputs: List[dict]) -> List[PlainInput]:
@@ -61,7 +64,10 @@ class CardanoParser(Parser):
                 continue
             input_ = PlainInput(
                 address=input_output["address"],
-                amount=Decimal(str(input_output["amount"])) * self.LOVELACE_SCALE,
+                amount=Amount(
+                    value=Decimal(str(input_output["amount"])) * self.LOVELACE_SCALE,
+                    currency_symbol=self.CURRENCY.symbol,
+                ),
                 transaction_pointer=PlainTransactionPointer(
                     transaction_hash=input_output["transaction_pointer_hash"],
                     output_index=input_output["transaction_pointer_index"],
@@ -79,11 +85,14 @@ class CardanoParser(Parser):
                 continue
             output = PlainOutput(
                 address=input_output["address"],
-                amount=Decimal(str(input_output["amount"])) * self.LOVELACE_SCALE,
+                amount=Amount(
+                    value=Decimal(str(input_output["amount"])) * self.LOVELACE_SCALE,
+                    currency_symbol=self.CURRENCY.symbol,
+                ),
             )
             outputs.append(output)
 
         return outputs
 
     def _get_total_amount_from_raw_transaction(self, outputs: List[PlainOutput]) -> Decimal:
-        return sum([output.amount for output in outputs], start=Decimal("0"))
+        return sum([output.amount.value for output in outputs], start=Decimal("0"))

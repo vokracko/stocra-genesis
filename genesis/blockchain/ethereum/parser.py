@@ -10,7 +10,7 @@ from genesis.blockchain.ethereum.tokens import TOKENS
 from genesis.blockchain.parser import Parser
 from genesis.blockchains import Blockchain
 from genesis.currencies import Currency
-from genesis.models import PlainBlock, PlainInput, PlainOutput, PlainTransaction
+from genesis.models import Amount, PlainBlock, PlainInput, PlainOutput, PlainTransaction
 
 logger = get_logger(__name__)
 
@@ -60,7 +60,10 @@ class EthereumParser(Parser):
             outputs = [
                 PlainOutput(
                     address=output_address,
-                    amount=amount if was_successful else Decimal("0"),
+                    amount=Amount(
+                        value=amount if was_successful else Decimal("0"),
+                        currency_symbol=currency_symbol,
+                    ),
                 ),
             ]
         else:
@@ -69,16 +72,21 @@ class EthereumParser(Parser):
         inputs = [
             PlainInput(
                 address=raw_transaction["from"],
-                amount=amount if was_successful else Decimal("0"),
+                amount=Amount(
+                    value=amount if was_successful else Decimal("0"),
+                    currency_symbol=currency_symbol,
+                ),
             ),
         ]
         return PlainTransaction(
             hash=raw_transaction["hash"],
             inputs=inputs,
             outputs=outputs,
-            fee=fee,
-            amount=amount if was_successful else Decimal("0"),
-            currency_symbol=currency_symbol,
+            fee=Amount(value=fee, currency_symbol=self.CURRENCY.symbol),
+            amount=Amount(
+                value=amount if was_successful else Decimal("0"),
+                currency_symbol=currency_symbol,
+            ),
         )
 
     def _parse_gas_used(self, raw_receipt: dict) -> Decimal:

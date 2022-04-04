@@ -12,6 +12,14 @@ PlainTransactionHash = str
 PlainOutputIndex = int
 
 
+class Amount(BaseModel):
+    value: Decimal
+    currency_symbol: str
+
+    class Config:
+        json_encoders = {Decimal: serialize_decimal}
+
+
 class PlainTransactionPointer(BaseModel):
     transaction_hash: PlainTransactionHash
     output_index: PlainOutputIndex
@@ -19,11 +27,8 @@ class PlainTransactionPointer(BaseModel):
 
 class PlainInput(BaseModel):
     address: Optional[PlainAddress] = None
-    amount: Optional[Decimal] = None
+    amount: Optional[Amount] = None
     transaction_pointer: Optional[PlainTransactionPointer] = None
-
-    class Config:
-        json_encoders = {Decimal: serialize_decimal}
 
     @root_validator
     def validate_address_or_pointer(cls, values) -> None:  # pylint: disable=no-self-argument
@@ -35,22 +40,15 @@ class PlainInput(BaseModel):
 
 class PlainOutput(BaseModel):
     address: PlainAddress
-    amount: Decimal
-
-    class Config:
-        json_encoders = {Decimal: serialize_decimal}
+    amount: Amount
 
 
 class PlainTransaction(BaseModel):
     hash: PlainTransactionHash
     inputs: List[PlainInput]
     outputs: List[PlainOutput]
-    amount: Decimal
-    fee: Decimal
-    currency_symbol: str
-
-    class Config:
-        json_encoders = {Decimal: serialize_decimal}
+    amount: Amount
+    fee: Amount
 
 
 class PlainBlock(BaseModel):

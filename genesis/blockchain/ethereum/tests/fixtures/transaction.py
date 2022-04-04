@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from genesis.currencies import Currency
-from genesis.models import PlainInput, PlainOutput, PlainTransaction
+from genesis.models import Amount, PlainInput, PlainOutput, PlainTransaction
 
 TRANSACTION_JSON = {
     "blockHash": "0x6bd7e3f6176b483b55e7d71ba96da60f9a93435b564315ff1dbd1c0a14f2d97d",
@@ -26,16 +26,27 @@ TRANSACTION_DECODED = PlainTransaction(
     inputs=[
         PlainInput(
             address="0x18916e1a2933cb349145a280473a5de8eb6630cb",
-            amount=Decimal("0.007455"),
+            amount=Amount(
+                value=Decimal("0.007455"),
+                currency_symbol=Currency.ETHER.symbol,
+            ),
         )
     ],
     outputs=[
         PlainOutput(
             address="0xd67f401f48d9bd30e8860ace01bff1bcd4675f1e",
-            amount=Decimal("0.007455"),
+            amount=Amount(
+                value=Decimal("0.007455"),
+                currency_symbol=Currency.ETHER.symbol,
+            ),
         ),
     ],
-    amount=Decimal("0.007455"),
-    fee=Decimal("0.001575"),
-    currency_symbol=Currency.ETHER.symbol,
+    amount=Amount(
+        value=Decimal("0.007455"),
+        currency_symbol=Currency.ETHER.symbol,
+    ),
+    fee=Amount(
+        value=Decimal("0.001575"),
+        currency_symbol=Currency.ETHER.symbol,
+    ),
 )

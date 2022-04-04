@@ -1,6 +1,7 @@
 from decimal import Decimal
 
-from genesis.models import PlainInput, PlainOutput, PlainTransaction
+from genesis.currencies import Currency
+from genesis.models import Amount, PlainInput, PlainOutput, PlainTransaction
 
 ERC20_TRANSACTION_UNKNOWN_JSON = {
     "blockHash": "0x6fdb4caf69ebd6abd484e558c04cd46a901a7da88e8e3bfa357e574fb9053680",
@@ -29,16 +30,25 @@ ERC20_TRANSACTION_UNKNOWN_DECODED = PlainTransaction(
     inputs=[
         PlainInput(
             address="0x5041ed759dd4afc3a72b8192c143f72f4724081a",
-            amount=ERC20_AMOUNT,
+            amount=Amount(
+                value=ERC20_AMOUNT,
+                currency_symbol="0xdac17f958d2ee523a2206206994597c13d831ec6",
+            ),
         )
     ],
     outputs=[
         PlainOutput(
             address="0x86e1e40f557cafbd792330fa69fa5e32e95f8f42",
-            amount=ERC20_AMOUNT,
+            amount=Amount(
+                value=ERC20_AMOUNT,
+                currency_symbol="0xdac17f958d2ee523a2206206994597c13d831ec6",
+            ),
         ),
     ],
-    amount=ERC20_AMOUNT,
-    fee=ERC20_FEE_SCALED,
+    amount=Amount(
+        value=ERC20_AMOUNT,
+        currency_symbol="0xdac17f958d2ee523a2206206994597c13d831ec6",
+    ),
+    fee=Amount(value=ERC20_FEE_SCALED, currency_symbol=Currency.ETHER.symbol),
     currency_symbol="0xdac17f958d2ee523a2206206994597c13d831ec6",
 )

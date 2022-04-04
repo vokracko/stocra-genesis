@@ -87,17 +87,20 @@ class BitcoinNodeAdapter(NodeAdapter):
             raise UnknownNodeException(await response.text())
 
         return await fast_deserialize_response(response)
+    async def post(self, data: dict) -> Dict:
+        result = await self._post(data)
+        return cast(dict, result['result'])
 
-    async def post(self, data: dict) -> Union[Dict]:
+    async def _post(self, data: dict) -> Union[Dict]:
         try:
             async with self.session.post(self.url, json=data, headers=self.headers) as response:
-                result = await self._get_json_or_raise_response_error_aiohttp(response)
+                return await self._get_json_or_raise_response_error_aiohttp(response)
                 return cast(dict, result["result"])
         except ClientError as exc:
             raise Unavailable("Node not available") from exc
 
     async def post_multiple(self, *args, **kwargs) -> Iterable[Dict]:
-        result = await self.post(*args, **kwargs)
+        result = await self._post(*args, **kwargs)
         for item in result:
             yield item
 

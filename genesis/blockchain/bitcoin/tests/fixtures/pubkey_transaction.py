@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from genesis.currencies import Currency
 from genesis.models import (
+    Amount,
     PlainAddress,
     PlainOutput,
     PlainTransaction,
@@ -39,8 +40,12 @@ TRANSACTION_JSON = {
 TRANSACTION_DECODED = PlainTransaction(
     hash=PlainTransactionHash(TRANSACTION_HASH),
     inputs=[],
-    outputs=[PlainOutput(address=PlainAddress("1KnUs1jKkSbcNwBt7gA4PaRKhiabuVXsaT"), amount=Decimal(50))],
-    amount=Decimal(50),
-    fee=Decimal(0),
-    currency_symbol=Currency.BITCOIN.symbol,
+    outputs=[
+        PlainOutput(
+            address=PlainAddress("1KnUs1jKkSbcNwBt7gA4PaRKhiabuVXsaT"),
+            amount=Amount(value=Decimal(50), currency_symbol=Currency.BITCOIN.symbol),
+        ),
+    ],
+    amount=Amount(value=Decimal(50), currency_symbol=Currency.BITCOIN.symbol),
+    fee=Amount(value=Decimal(0), currency_symbol=Currency.BITCOIN.symbol),
 )

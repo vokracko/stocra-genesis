@@ -12,6 +12,7 @@ from genesis.blockchain.parser import Parser
 from genesis.blockchains import Blockchain
 from genesis.currencies import Currency
 from genesis.models import (
+    Amount,
     PlainAddress,
     PlainBlock,
     PlainInput,
@@ -42,16 +43,21 @@ class BitcoinParser(Parser):
     async def decode_transaction_without_inputs(self, raw_transaction: dict) -> PlainTransaction:
         fee = Decimal("0")
         outputs = await self._get_outputs_with_amounts_from_raw_transaction(raw_transaction)
-        amount = self._get_total_amount_from_raw_transaction(raw_transaction)
+        amount = self._get_total_amount_from_raw_transaction(outputs)
         transaction_hash = raw_transaction["txid"]
 
         return PlainTransaction(
             hash=transaction_hash,
             inputs=[],
             outputs=outputs,
-            amount=amount,
-            fee=fee,
-            currency_symbol=self.CURRENCY.symbol,
+            amount=Amount(
+                value=amount,
+                currency_symbol=self.CURRENCY.symbol,
+            ),
+            fee=Amount(
+                value=fee,
+                currency_symbol=self.CURRENCY.symbol,
+            ),
         )
 
     async def decode_transaction(self, raw_transaction: dict) -> PlainTransaction:
@@ -61,14 +67,13 @@ class BitcoinParser(Parser):
             inputs = []
         else:
             inputs = await self._get_decoded_inputs_from_raw_transaction(raw_transaction)
-            sum_of_inputs = sum([input_.amount for input_ in inputs])
-            transaction.fee = sum_of_inputs - transaction.amount
+            sum_of_inputs = sum([input_.amount.value for input_ in inputs])
+            transaction.fee = Amount(value=sum_of_inputs - transaction.amount.value, currency_symbol=self.CURRENCY.symbol)
 
         transaction.inputs = inputs
         return transaction
 
     async def _get_decoded_inputs_from_raw_transaction(self, raw_transaction: dict) -> List[PlainInput]:
-        print(f"{raw_transaction=}")
         input_transactions = []
         inputs = []
         transaction_pointers = {vin["txid"]: vin["vout"] for vin in raw_transaction["vin"]}
@@ -109,14 +114,17 @@ class BitcoinParser(Parser):
 
             output = PlainOutput(
                 address=address,
-                amount=Decimal(str(vout["value"])),
+                amount=Amount(
+                    value=Decimal(str(vout["value"])),
+                    currency_symbol=self.CURRENCY.symbol,
+                ),
             )
             results.append(output)
 
         return results
 
-    def _get_total_amount_from_raw_transaction(self, raw_transaction: dict) -> Decimal:
-        return sum([Decimal(str(vout["value"])) for vout in raw_transaction["vout"]], start=Decimal("0"))
+    def _get_total_amount_from_raw_transaction(self, outputs: List[PlainOutput]) -> Decimal:
+        return sum([output.amount.value for output in outputs], start=Decimal("0"))
 
     def _is_coinbase_transaction(self, raw_transaction: dict) -> bool:
         vin = raw_transaction["vin"]
