@@ -7,15 +7,14 @@ from genesis.blockchain.bitcoin.tests.conftest import EXPECTED_HEADERS, NODE_URL
 from genesis.blockchain.tests.utils import AwaitableValue, CalledRequests
 
 
-@pytest.mark.parametrize("verbose", [True, False])
 @pytest.mark.asyncio
-async def test_get_transaction(adapter: BitcoinNodeAdapter, verbose: bool) -> None:
+async def test_get_transaction(adapter: BitcoinNodeAdapter) -> None:
     with aioresponses() as mocker:
         mocker.post(NODE_URL, payload=dict(result=42))
-        transaction = await adapter.get_transaction("hash", verbose=verbose)
+        transaction = await adapter.get_transaction("hash")
         request_kwargs = CalledRequests(mocker.requests).get_request_kwargs()
         assert request_kwargs["headers"] == EXPECTED_HEADERS
-        assert request_kwargs["json"] == dict(method="getrawtransaction", params=["hash", verbose])
+        assert request_kwargs["json"] == dict(method="getrawtransaction", params=["hash", True])
 
     assert transaction == 42
 

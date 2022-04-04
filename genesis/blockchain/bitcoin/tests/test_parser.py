@@ -21,7 +21,7 @@ async def test_decode_coinbase_transaction(parser: BitcoinParser) -> None:
         TRANSACTION_JSON,
     )
 
-    decoded_transaction = await parser.decode_transaction(TRANSACTION_JSON, decode_inputs=False)
+    decoded_transaction = await parser.decode_transaction(TRANSACTION_JSON)
     assert decoded_transaction == TRANSACTION_DECODED
 
 
@@ -32,7 +32,7 @@ async def test_decode_pubkey_transaction(parser: BitcoinParser) -> None:
         TRANSACTION_JSON,
     )
 
-    decoded_transaction = await parser.decode_transaction(TRANSACTION_JSON, decode_inputs=False)
+    decoded_transaction = await parser.decode_transaction(TRANSACTION_JSON)
     assert decoded_transaction == TRANSACTION_DECODED
 
 

@@ -16,8 +16,8 @@ from genesis.encoders import fast_deserialize_response
 class BitcoinNodeAdapter(NodeAdapter):
     BLOCKCHAIN: ClassVar[Blockchain] = Blockchain.BITCOIN
 
-    async def get_transaction(self, transaction_hash: str, *, verbose: bool = True) -> dict:
-        return await self.post(dict(method="getrawtransaction", params=[transaction_hash, verbose]))
+    async def get_transaction(self, transaction_hash: str) -> dict:
+        return await self.post(dict(method="getrawtransaction", params=[transaction_hash, True]))
 
     async def get_block_by_hash(self, block_hash: str) -> dict:
         data = dict(
@@ -50,9 +50,9 @@ class BitcoinNodeAdapter(NodeAdapter):
         result = await self.post(dict(method="decodescript", params=[script]))
         return result
 
-    async def get_transactions(self, transaction_hashes: List[str], *, verbose: bool = True) -> Iterable[dict]:
+    async def get_transactions(self, transaction_hashes: List[str]) -> Iterable[dict]:
         data = [
-            dict(id=i, method="getrawtransaction", params=[transaction_hash, verbose])
+            dict(id=i, method="getrawtransaction", params=[transaction_hash, True])
             for i, transaction_hash in enumerate(transaction_hashes, start=1)
         ]
         return self.post_multiple(data)
