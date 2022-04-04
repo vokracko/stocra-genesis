@@ -57,8 +57,13 @@ class EthereumNodeAdapter(NodeAdapter):
         return await self.post(data)
 
     async def get_block_latest(self) -> dict:
-        block_height = await self.get_block_count()
-        return await self.get_block_by_height(block_height)
+        data = dict(
+            jsonrpc="2.0",
+            method="eth_getBlockByNumber",
+            params=["latest", False],
+            id=1,
+        )
+        return await self.post(data)
 
     async def get_block_count(self) -> int:
         data = dict(
