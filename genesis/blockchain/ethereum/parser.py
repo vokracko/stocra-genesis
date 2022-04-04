@@ -55,15 +55,19 @@ class EthereumParser(Parser):
             amount = Decimal(int(raw_transaction["value"], 16)) * self.SCALING_FACTOR
             output_address = raw_transaction["to"]
 
+        if output_address:
+            outputs = [
+                PlainOutput(
+                    address=output_address,
+                    amount=amount,
+                ),
+            ]
+        else:
+            outputs = []
+
         inputs = [
             PlainInput(
                 address=raw_transaction["from"],
-                amount=amount,
-            ),
-        ]
-        outputs = [
-            PlainOutput(
-                address=output_address,
                 amount=amount,
             ),
         ]
