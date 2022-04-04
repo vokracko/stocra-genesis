@@ -1,15 +1,21 @@
-from typing import cast
+import asyncio
+from typing import Dict, cast
 
-from aiohttp import ClientResponse
+from aiohttp import ClientError, ClientResponse, ClientSession
 
 from genesis.blockchain.adapter import NodeAdapter
-from genesis.blockchain.exceptions import DoesNotExist
+from genesis.blockchain.exceptions import DoesNotExist, Unavailable
 from genesis.blockchains import Blockchain
-from genesis.encoders import fast_deserialize_response
+from genesis.encoders import fast_deserialize_response, fast_serializer_to_str
 
 
 class EthereumNodeAdapter(NodeAdapter):
     BLOCKCHAIN = Blockchain.ETHEREUM
+
+    session: ClientSession
+
+    async def init_async(self):
+        self.session = ClientSession(json_serialize=fast_serializer_to_str)
 
     async def get_transaction(self, transaction_hash: str) -> dict:
         data = dict(
@@ -68,9 +74,13 @@ class EthereumNodeAdapter(NodeAdapter):
     def headers(self) -> dict:
         return {}
 
-    async def post(self, *args, **kwargs) -> dict:
-        result = await super().post(*args, **kwargs)
-        return cast(dict, result["result"])
+    async def post(self, data: dict) -> Dict:
+        try:
+            async with self.session.post(self.url, json=data, headers=self.headers) as response:
+                result = await self._get_json_or_raise_response_error_aiohttp(response)
+                return cast(dict, result["result"])
+        except ClientError as exc:
+            raise Unavailable("Node not available") from exc
 
     @staticmethod
     async def _get_json_or_raise_response_error_aiohttp(response: ClientResponse) -> dict:
@@ -84,3 +94,8 @@ class EthereumNodeAdapter(NodeAdapter):
             raise DoesNotExist()
 
         return result
+
+    def __del__(self):
+        if self.session:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(self.session.close())

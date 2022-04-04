@@ -1,20 +1,26 @@
+import asyncio
 from typing import ClassVar, Dict, Iterable, List, Union, cast
 
-from aiohttp import ClientResponse
+from aiohttp import ClientError, ClientResponse, ClientSession
 
 from genesis.blockchain.adapter import NodeAdapter
 from genesis.blockchain.exceptions import (
     DoesNotExist,
     NodeNotReady,
     TooManyRequests,
+    Unavailable,
     UnknownNodeException,
 )
 from genesis.blockchains import Blockchain
-from genesis.encoders import fast_deserialize_response
+from genesis.encoders import fast_deserialize_response, fast_serializer_to_str
 
 
 class BitcoinNodeAdapter(NodeAdapter):
     BLOCKCHAIN: ClassVar[Blockchain] = Blockchain.BITCOIN
+    session: ClientSession
+
+    async def init_async(self):
+        self.session = ClientSession(json_serialize=fast_serializer_to_str)
 
     async def get_transaction(self, transaction_hash: str) -> dict:
         return await self.post(dict(method="getrawtransaction", params=[transaction_hash, True]))
@@ -81,14 +87,22 @@ class BitcoinNodeAdapter(NodeAdapter):
 
             raise UnknownNodeException(await response.text())
 
-        result = await fast_deserialize_response(response)
-        return result
+        return await fast_deserialize_response(response)
 
-    async def post(self, *args, **kwargs) -> Dict:
-        result = await super().post(*args, **kwargs)
-        return cast(dict, result["result"])
+    async def post(self, data: dict) -> Union[Dict]:
+        try:
+            async with self.session.post(self.url, json=data, headers=self.headers) as response:
+                result = await self._get_json_or_raise_response_error_aiohttp(response)
+                return cast(dict, result["result"])
+        except ClientError as exc:
+            raise Unavailable("Node not available") from exc
 
     async def post_multiple(self, *args, **kwargs) -> Iterable[Dict]:
-        result = await super().post(*args, **kwargs)
+        result = await self.post(*args, **kwargs)
         for item in result:
             yield item
+
+    def __del__(self):
+        if self.session:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(self.session.close())
