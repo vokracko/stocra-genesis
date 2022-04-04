@@ -1,18 +1,11 @@
 import asyncio
-from typing import ClassVar, Dict, Iterable, List, Union, cast
+from typing import ClassVar, List
 
 import asyncpg
-from aiohttp import ClientResponse
 
 from genesis.blockchain.adapter import NodeAdapter
-from genesis.blockchain.exceptions import (
-    DoesNotExist,
-    NodeNotReady,
-    TooManyRequests,
-    UnknownNodeException,
-)
+from genesis.blockchain.exceptions import DoesNotExist
 from genesis.blockchains import Blockchain
-from genesis.encoders import fast_deserialize_response
 
 
 class CardanoNodeAdapter(NodeAdapter):
@@ -22,7 +15,7 @@ class CardanoNodeAdapter(NodeAdapter):
     async def init_async(self):
         self.connection = await asyncpg.connect(dsn=self.url)
 
-    async def get_transaction(self, transaction_hash: str, *, verbose: bool = True) -> dict:
+    async def get_transaction(self, transaction_hash: str) -> dict:
         # TODO statement could be prepared and stored in db upon start up
         query = """
             SELECT 
@@ -88,7 +81,7 @@ class CardanoNodeAdapter(NodeAdapter):
         return await self.get_block_by_height(block_height)
 
     async def get_block_count(self) -> int:
-        QUERY = """
+        query = """
             SELECT 
                 block.block_no AS block_count
             FROM block 
@@ -96,7 +89,7 @@ class CardanoNodeAdapter(NodeAdapter):
             ORDER BY block.block_no DESC
             LIMIT 1
         """
-        return await self.query(QUERY)
+        return await self.query(query)
 
     async def get_list_of_transactions_in_block(self, block_id: int) -> List[dict]:
         sql = """
