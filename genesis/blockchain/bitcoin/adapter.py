@@ -53,8 +53,7 @@ class BitcoinNodeAdapter(NodeAdapter):
         return await self.post(dict(method="getblockcount"))
 
     async def decode_script(self, script: str) -> dict:
-        result = await self.post(dict(method="decodescript", params=[script]))
-        return result
+        return await self.post(dict(method="decodescript", params=[script]))
 
     async def get_transactions(self, transaction_hashes: List[str]) -> Iterable[dict]:
         data = [

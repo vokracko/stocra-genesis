@@ -67,25 +67,23 @@ async def test_decode_erc20_transaction_unknown_token(parser: EthereumParser) ->
     assert decoded_transaction == ERC20_TRANSACTION_UNKNOWN_DECODED
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "raw_receipt, expected_result",
     [
         (TRANSACTION_RECEIPT_JSON, TRANSACTION_RECEIPT_GAS_USED),
     ],
 )
-async def test_parse_gas_used(parser: EthereumParser, raw_receipt: dict, expected_result: Decimal) -> None:
-    result = await parser._parse_gas_used(raw_receipt)
+def test_parse_gas_used(parser: EthereumParser, raw_receipt: dict, expected_result: Decimal) -> None:
+    result = parser._parse_gas_used(raw_receipt)
     assert result == expected_result
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "raw_receipt, expected_result",
     [
         (TRANSACTION_RECEIPT_JSON, TRANSACTION_RECEIPT_GAS_PRICE),
     ],
 )
-async def test_parse_gas_price(parser: EthereumParser, raw_receipt: dict, expected_result: Decimal) -> None:
-    result = await parser._parse_gas_price(raw_receipt)
+def test_parse_gas_price(parser: EthereumParser, raw_receipt: dict, expected_result: Decimal) -> None:
+    result = parser._parse_gas_price(raw_receipt)
     assert result == expected_result

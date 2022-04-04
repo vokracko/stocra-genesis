@@ -1,4 +1,4 @@
-from decimal import Decimal, getcontext
+from decimal import Decimal
 
 import orjson
 from aiohttp import ClientResponse

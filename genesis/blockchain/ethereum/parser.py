@@ -39,16 +39,16 @@ class EthereumParser(Parser):
 
     async def decode_transaction(self, raw_transaction: dict) -> PlainTransaction:
         receipt = await self.node_adapter.get_transaction_receipt(raw_transaction["hash"])
-        gas_used = await self._parse_gas_used(receipt)
-        gas_price = await self._parse_gas_price(receipt)
+        gas_used = self._parse_gas_used(receipt)
+        gas_price = self._parse_gas_price(receipt)
         fee = gas_used * gas_price * self.SCALING_FACTOR
         input_data = raw_transaction["input"]
 
         for decoder in self.DECODERS:
-            if await decoder.matches(input_data):
+            if decoder.matches(input_data):
                 currency_symbol = raw_transaction["to"]
-                amount = await decoder.get_amount(input_data)
-                output_address = await decoder.get_output_address(input_data)
+                amount = decoder.get_amount(input_data)
+                output_address = decoder.get_output_address(input_data)
                 break
         else:
             currency_symbol = self.CURRENCY.symbol
@@ -80,9 +80,9 @@ class EthereumParser(Parser):
             currency_symbol=currency_symbol,
         )
 
-    async def _parse_gas_used(self, raw_receipt: dict) -> Decimal:
+    def _parse_gas_used(self, raw_receipt: dict) -> Decimal:
         gas_used_hex = raw_receipt["gasUsed"]
         return Decimal(int(gas_used_hex, 16))
 
-    async def _parse_gas_price(self, raw_receipt: dict) -> Decimal:
+    def _parse_gas_price(self, raw_receipt: dict) -> Decimal:
         return Decimal(int(raw_receipt["effectiveGasPrice"], 16))

@@ -42,7 +42,7 @@ class BitcoinParser(Parser):
     async def decode_transaction_without_inputs(self, raw_transaction: dict) -> PlainTransaction:
         fee = Decimal("0")
         outputs = await self._get_outputs_with_amounts_from_raw_transaction(raw_transaction)
-        amount = await self._get_total_amount_from_raw_transaction(raw_transaction)
+        amount = self._get_total_amount_from_raw_transaction(raw_transaction)
         transaction_hash = raw_transaction["txid"]
 
         return PlainTransaction(
@@ -56,7 +56,7 @@ class BitcoinParser(Parser):
 
     async def decode_transaction(self, raw_transaction: dict) -> PlainTransaction:
         transaction = await self.decode_transaction_without_inputs(raw_transaction)
-        is_coinbase_transaction = await self._is_coinbase_transaction(raw_transaction)
+        is_coinbase_transaction = self._is_coinbase_transaction(raw_transaction)
         if is_coinbase_transaction:
             inputs = []
         else:
@@ -66,20 +66,6 @@ class BitcoinParser(Parser):
 
         transaction.inputs = inputs
         return transaction
-
-    async def _get_inputs_from_raw_transaction(self, raw_transaction: dict) -> List[PlainInput]:
-        results = []
-
-        for vin in raw_transaction["vin"]:
-            transaction_input = PlainInput(
-                transaction_pointer=PlainTransactionPointer(
-                    transaction_hash=vin["txid"],
-                    output_index=vin["vout"],
-                )
-            )
-            results.append(transaction_input)
-
-        return results
 
     async def _get_decoded_inputs_from_raw_transaction(self, raw_transaction: dict) -> List[PlainInput]:
         print(f"{raw_transaction=}")
@@ -129,10 +115,10 @@ class BitcoinParser(Parser):
 
         return results
 
-    async def _get_total_amount_from_raw_transaction(self, raw_transaction: dict) -> Decimal:
+    def _get_total_amount_from_raw_transaction(self, raw_transaction: dict) -> Decimal:
         return sum([Decimal(str(vout["value"])) for vout in raw_transaction["vout"]], start=Decimal("0"))
 
-    async def _is_coinbase_transaction(self, raw_transaction: dict) -> bool:
+    def _is_coinbase_transaction(self, raw_transaction: dict) -> bool:
         vin = raw_transaction["vin"]
         return len(vin) == 1 and vin[0].get("coinbase") is not None
 
@@ -149,7 +135,7 @@ class BitcoinParser(Parser):
         elif script_type == "nulldata":
             return "null"
         elif script_type == "pubkey":
-            return await self._p2shpubkey_to_address(script_pub_key["asm"].split(" ")[0])
+            return self._p2shpubkey_to_address(script_pub_key["asm"].split(" ")[0])
         elif script_type == "multisig":
             result = await self.node_adapter.decode_script(script_pub_key["hex"])
             assert set(result.keys()).issubset({"asm", "type", "p2sh", "segwit"}), f"keys are {result.keys()}"
@@ -157,7 +143,7 @@ class BitcoinParser(Parser):
 
         raise UnknownScriptPubKey(script_type)
 
-    async def _p2shpubkey_to_address(self, p2sh_pubkey: str) -> str:
+    def _p2shpubkey_to_address(self, p2sh_pubkey: str) -> str:
         step_1 = hashlib.sha256(bytes.fromhex(p2sh_pubkey)).digest()
         step_2 = hashlib.new("ripemd160", step_1).digest()
         step_3 = bytes.fromhex("00") + step_2

@@ -39,9 +39,9 @@ class CardanoParser(Parser):
         )
 
     async def decode_transaction(self, raw_transaction: dict) -> PlainTransaction:
-        outputs = await self._get_outputs_with_amounts_from_raw_transaction(raw_transaction["inputs_outputs"])
-        inputs = await self._get_inputs_from_raw_transaction(raw_transaction["inputs_outputs"])
-        amount = await self._get_total_amount_from_raw_transaction(outputs)
+        outputs = self._get_outputs_with_amounts_from_raw_transaction(raw_transaction["inputs_outputs"])
+        inputs = self._get_inputs_from_raw_transaction(raw_transaction["inputs_outputs"])
+        amount = self._get_total_amount_from_raw_transaction(outputs)
         fee = sum([input_.amount for input_ in inputs]) - amount
 
         return PlainTransaction(
@@ -53,7 +53,7 @@ class CardanoParser(Parser):
             currency_symbol=self.CURRENCY.symbol,
         )
 
-    async def _get_inputs_from_raw_transaction(self, inputs_outputs: List[dict]) -> List[PlainInput]:
+    def _get_inputs_from_raw_transaction(self, inputs_outputs: List[dict]) -> List[PlainInput]:
         inputs = []
 
         for input_output in inputs_outputs:
@@ -71,7 +71,7 @@ class CardanoParser(Parser):
 
         return inputs
 
-    async def _get_outputs_with_amounts_from_raw_transaction(self, inputs_outputs: List[dict]) -> List[PlainOutput]:
+    def _get_outputs_with_amounts_from_raw_transaction(self, inputs_outputs: List[dict]) -> List[PlainOutput]:
         outputs = []
 
         for input_output in inputs_outputs:
@@ -85,5 +85,5 @@ class CardanoParser(Parser):
 
         return outputs
 
-    async def _get_total_amount_from_raw_transaction(self, outputs: List[PlainOutput]) -> Decimal:
+    def _get_total_amount_from_raw_transaction(self, outputs: List[PlainOutput]) -> Decimal:
         return sum([output.amount for output in outputs], start=Decimal("0"))

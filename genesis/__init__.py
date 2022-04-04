@@ -1,4 +1,4 @@
-from decimal import setcontext, FloatOperation, getcontext
+from decimal import FloatOperation, getcontext, setcontext
 
 DEFAULT_DECIMAL_CONTEXT = getcontext()
 DEFAULT_DECIMAL_CONTEXT.prec = 30

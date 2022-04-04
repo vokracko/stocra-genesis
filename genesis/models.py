@@ -1,10 +1,10 @@
 from decimal import Decimal
 from typing import List, Optional
 
-from genesis.encoders import serialize_decimal
 from pydantic import BaseModel, root_validator, validator
 
 from genesis.blockchain_types import BlockchainType
+from genesis.encoders import serialize_decimal
 from genesis.token_types import TokenType
 
 PlainAddress = str
