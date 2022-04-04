@@ -19,7 +19,8 @@ from genesis.blockchains import Blockchain
 
 class CardanoNodeAdapter(NodeAdapter):
     BLOCKCHAIN: ClassVar[Blockchain] = Blockchain.CARDANO
-    connection: Connection
+
+    connection: Connection = None
     prepared_statements: Dict[str, PreparedStatement]
 
     async def init_async(self):
