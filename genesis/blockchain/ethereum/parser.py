@@ -51,10 +51,8 @@ class EthereumParser(Parser):
         fee = gas_used * gas_price * self.SCALING_FACTOR
 
         if await self._is_erc20_transfer(raw_transaction):
-            token_info = await self._get_token_info(raw_transaction)
-            currency_symbol = token_info.currency.symbol
-            raw_amount = await self._parse_amount_erc20(raw_transaction)
-            amount = await self._scale_token_amount(token_info, raw_amount)
+            currency_symbol = raw_transaction["to"]
+            amount = await self._parse_amount_erc20(raw_transaction)
             output_address = await self._parse_recipient_erc20(raw_transaction)
         else:
             currency_symbol = self.CURRENCY.symbol
@@ -104,9 +102,6 @@ class EthereumParser(Parser):
     async def _parse_amount_erc20(self, raw_transaction: dict) -> Decimal:
         amount_hex = raw_transaction["input"][INPUT_ERC20_AMOUNT_OFFSET:]
         return Decimal(int(amount_hex, 16))
-
-    async def _scale_token_amount(self, token_info: TokenInfo, value: Decimal) -> Decimal:
-        return value * token_info.scaling
 
     async def _parse_gas_used(self, raw_receipt: dict) -> Decimal:
         gas_used_hex = raw_receipt["gasUsed"]
