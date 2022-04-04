@@ -27,10 +27,17 @@ TRANSACTION_DECODED = PlainTransaction(
         PlainInput(
             address="0x18916e1a2933cb349145a280473a5de8eb6630cb",
             amount=Amount(
+                value=Decimal("0.001575"),
+                currency_symbol=Currency.ETHER.symbol,
+            ),
+        ),
+        PlainInput(
+            address="0x18916e1a2933cb349145a280473a5de8eb6630cb",
+            amount=Amount(
                 value=Decimal("0.007455"),
                 currency_symbol=Currency.ETHER.symbol,
             ),
-        )
+        ),
     ],
     outputs=[
         PlainOutput(

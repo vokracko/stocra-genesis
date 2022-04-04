@@ -68,7 +68,9 @@ class BitcoinParser(Parser):
         else:
             inputs = await self._get_decoded_inputs_from_raw_transaction(raw_transaction)
             sum_of_inputs = sum([input_.amount.value for input_ in inputs])
-            transaction.fee = Amount(value=sum_of_inputs - transaction.amount.value, currency_symbol=self.CURRENCY.symbol)
+            transaction.fee = Amount(
+                value=sum_of_inputs - transaction.amount.value, currency_symbol=self.CURRENCY.symbol
+            )
 
         transaction.inputs = inputs
         return transaction

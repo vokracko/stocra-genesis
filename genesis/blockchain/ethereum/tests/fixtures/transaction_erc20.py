@@ -30,10 +30,17 @@ ERC20_TRANSACTION_DECODED = PlainTransaction(
         PlainInput(
             address="0x5041ed759dd4afc3a72b8192c143f72f4724081a",
             amount=Amount(
+                value=ERC20_FEE_SCALED,
+                currency_symbol=Currency.ETHER.symbol,
+            ),
+        ),
+        PlainInput(
+            address="0x5041ed759dd4afc3a72b8192c143f72f4724081a",
+            amount=Amount(
                 value=ERC20_AMOUNT,
                 currency_symbol="0xdac17f958d2ee523a2206206994597c13d831ec7",
             ),
-        )
+        ),
     ],
     outputs=[
         PlainOutput(

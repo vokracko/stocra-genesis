@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "genesis"
-version = "0.5.13"
+version = "0.5.14"
 description = ""
 authors = ["Lukáš Vokráčko <lukas@b2c2.com>"]
 
@@ -63,6 +63,9 @@ extension-pkg-whitelist = [
     "pydantic",
 ]
 max-complexity = 10
+
+[tool.pylint.SIMILARITIES]
+ignore-imports = "yes"
 
 [tool.mypy]
 python_version = 3.9

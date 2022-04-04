@@ -39,10 +39,8 @@ class EthereumParser(Parser):
 
     async def decode_transaction(self, raw_transaction: dict) -> PlainTransaction:
         receipt = await self.node_adapter.get_transaction_receipt(raw_transaction["hash"])
-        gas_used = self._parse_gas_used(receipt)
-        gas_price = self._parse_gas_price(receipt)
+        fee_amount = self._get_fee_amount(receipt)
         was_successful = self._was_transaction_successful(receipt)
-        fee = gas_used * gas_price * self.SCALING_FACTOR
         input_data = raw_transaction["input"]
 
         for decoder in self.DECODERS:
@@ -56,12 +54,12 @@ class EthereumParser(Parser):
             amount = Decimal(int(raw_transaction["value"], 16)) * self.SCALING_FACTOR
             output_address = raw_transaction["to"]
 
-        if output_address:
+        if output_address and was_successful:
             outputs = [
                 PlainOutput(
                     address=output_address,
                     amount=Amount(
-                        value=amount if was_successful else Decimal("0"),
+                        value=amount,
                         currency_symbol=currency_symbol,
                     ),
                 ),
@@ -72,21 +70,37 @@ class EthereumParser(Parser):
         inputs = [
             PlainInput(
                 address=raw_transaction["from"],
-                amount=Amount(
-                    value=amount if was_successful else Decimal("0"),
-                    currency_symbol=currency_symbol,
-                ),
+                amount=fee_amount,
             ),
         ]
+
+        if was_successful:
+            inputs.append(
+                PlainInput(
+                    address=raw_transaction["from"],
+                    amount=Amount(
+                        value=amount if was_successful else Decimal("0"),
+                        currency_symbol=currency_symbol,
+                    ),
+                )
+            )
         return PlainTransaction(
             hash=raw_transaction["hash"],
             inputs=inputs,
             outputs=outputs,
-            fee=Amount(value=fee, currency_symbol=self.CURRENCY.symbol),
+            fee=fee_amount,
             amount=Amount(
                 value=amount if was_successful else Decimal("0"),
                 currency_symbol=currency_symbol,
             ),
+        )
+
+    def _get_fee_amount(self, receipt):
+        gas_used = self._parse_gas_used(receipt)
+        gas_price = self._parse_gas_price(receipt)
+        return Amount(
+            value=gas_used * gas_price * self.SCALING_FACTOR,
+            currency_symbol=self.CURRENCY.symbol,
         )
 
     def _parse_gas_used(self, raw_receipt: dict) -> Decimal:

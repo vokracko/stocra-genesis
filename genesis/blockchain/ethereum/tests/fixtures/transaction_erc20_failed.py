@@ -43,20 +43,12 @@ TRANSACTION_ERC20_FAILED_DECODED = PlainTransaction(
         PlainInput(
             address="0x980370651dcb658d1b05f93b179f63fc8dbf2896",
             amount=Amount(
-                value=Decimal("0"),
-                currency_symbol="0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-            ),
-        )
-    ],
-    outputs=[
-        PlainOutput(
-            address="0xdc05c435f07f2439732cae234639819530810cdc",
-            amount=Amount(
-                value=Decimal("0"),
-                currency_symbol="0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                value=Decimal("0.000992772"),
+                currency_symbol=Currency.ETHER.symbol,
             ),
         ),
     ],
+    outputs=[],
     amount=Amount(value=Decimal("0"), currency_symbol="0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"),
     fee=Amount(
         value=Decimal("0.000992772"),
