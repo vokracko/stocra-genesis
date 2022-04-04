@@ -1,6 +1,7 @@
 from decimal import Decimal
 from typing import List, Optional
 
+from genesis.encoders import serialize_decimal
 from pydantic import BaseModel, root_validator, validator
 
 from genesis.blockchain_types import BlockchainType
@@ -22,7 +23,7 @@ class PlainInput(BaseModel):
     transaction_pointer: Optional[PlainTransactionPointer] = None
 
     class Config:
-        json_encoders = {Decimal: str}
+        json_encoders = {Decimal: serialize_decimal}
 
     @root_validator
     def validate_address_or_pointer(cls, values) -> None:  # pylint: disable=no-self-argument
@@ -37,7 +38,7 @@ class PlainOutput(BaseModel):
     amount: Decimal
 
     class Config:
-        json_encoders = {Decimal: str}
+        json_encoders = {Decimal: serialize_decimal}
 
 
 class PlainTransaction(BaseModel):
@@ -49,7 +50,7 @@ class PlainTransaction(BaseModel):
     currency_symbol: str
 
     class Config:
-        json_encoders = {Decimal: str}
+        json_encoders = {Decimal: serialize_decimal}
 
 
 class PlainBlock(BaseModel):
@@ -81,7 +82,7 @@ class TokenInfo(BaseModel):
     type: TokenType
 
     class Config:
-        json_encoders = {Decimal: str}
+        json_encoders = {Decimal: serialize_decimal}
         frozen = True
 
 

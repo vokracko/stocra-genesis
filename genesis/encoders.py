@@ -1,12 +1,12 @@
-import decimal
+from decimal import Decimal, getcontext
 
 import orjson
 from aiohttp import ClientResponse
 
 
 def default_object_serializer(obj: object):
-    if isinstance(obj, decimal.Decimal):
-        return str(obj)
+    if isinstance(obj, Decimal):
+        return serialize_decimal(obj)
     raise TypeError
 
 
@@ -29,3 +29,16 @@ def fast_deserializer_from_str(data: str) -> dict:
 async def fast_deserialize_response(response: ClientResponse) -> dict:
     data = await response.read()
     return fast_deserializer_from_bytes(data)
+
+
+def serialize_decimal(value: Decimal) -> str:
+    if value == Decimal("0"):
+        return "0"
+
+    value_str = f"{value:.30f}"
+
+    if "." not in value_str:
+        return value_str
+
+    stripped_value = value_str.rstrip("0")
+    return stripped_value.removesuffix(".")
