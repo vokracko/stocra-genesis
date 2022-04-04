@@ -1,3 +1,5 @@
+from typing import Dict, Type
+
 from genesis.blockchain.adapter import NodeAdapter
 from genesis.blockchain.bitcoin.adapter import BitcoinNodeAdapter
 from genesis.blockchain.bitcoin.parser import BitcoinParser
@@ -12,14 +14,14 @@ from genesis.blockchain.litecoin.parser import LitecoinParser
 from genesis.blockchain.parser import Parser
 from genesis.blockchains import Blockchain
 
-ADAPTERS = {
+ADAPTERS: Dict[Blockchain, Type[NodeAdapter]] = {
     BitcoinNodeAdapter.BLOCKCHAIN: BitcoinNodeAdapter,
     EthereumNodeAdapter.BLOCKCHAIN: EthereumNodeAdapter,
     LitecoinNodeAdapter.BLOCKCHAIN: LitecoinNodeAdapter,
     DogecoinNodeAdapter.BLOCKCHAIN: DogecoinNodeAdapter,
     CardanoNodeAdapter.BLOCKCHAIN: CardanoNodeAdapter,
 }
-PARSERS = {
+PARSERS: Dict[Blockchain, Type[Parser]] = {
     BitcoinParser.BLOCKCHAIN: BitcoinParser,
     EthereumParser.BLOCKCHAIN: EthereumParser,
     LitecoinParser.BLOCKCHAIN: LitecoinParser,

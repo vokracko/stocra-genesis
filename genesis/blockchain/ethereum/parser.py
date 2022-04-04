@@ -95,7 +95,7 @@ class EthereumParser(Parser):
             ),
         )
 
-    def _get_fee_amount(self, receipt):
+    def _get_fee_amount(self, receipt) -> Amount:
         gas_used = self._parse_gas_used(receipt)
         gas_price = self._parse_gas_price(receipt)
         return Amount(

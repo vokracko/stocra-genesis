@@ -4,7 +4,7 @@ import orjson
 from aiohttp import ClientResponse
 
 
-def default_object_serializer(obj: object):
+def default_object_serializer(obj: object) -> str:
     if isinstance(obj, Decimal):
         return serialize_decimal(obj)
     raise TypeError
