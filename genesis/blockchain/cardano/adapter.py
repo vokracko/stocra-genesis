@@ -24,9 +24,9 @@ class CardanoNodeAdapter(NodeAdapter):
 
     async def init_async(self):
         self.connection = await connect(dsn=self.url)
-        await self.prepare_statements()
+        await self._prepare_statements()
 
-    async def prepare_statements(self) -> None:
+    async def _prepare_statements(self) -> None:
         self.prepared_statements = {
             self.get_transaction.__name__: await self.connection.prepare(GET_TRANSACTION_QUERY),
             self.get_block_by_height.__name__: await self.connection.prepare(GET_BLOCK_BY_HEIGHT_QUERY),

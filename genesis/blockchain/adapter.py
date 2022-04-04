@@ -1,5 +1,5 @@
 import asyncio
-from typing import ClassVar, Dict, List, Union
+from typing import ClassVar, Dict, Union
 
 import aiohttp
 from aiohttp import ClientError, ClientResponse
@@ -23,16 +23,10 @@ class NodeAdapter:
     async def init_async(self):
         self.session = aiohttp.ClientSession(json_serialize=fast_serializer_to_str)
 
-    async def get_transactions(self, transaction_hashes: List[str], *, verbose: bool = True) -> List[dict]:
-        raise NotImplementedError
-
-    async def get_transaction(self, transaction_hash: str, *, verbose: bool = True) -> dict:
+    async def get_transaction(self, transaction_hash: str) -> dict:
         raise NotImplementedError
 
     async def get_block_by_hash(self, block_hash: str) -> dict:
-        raise NotImplementedError
-
-    async def get_block_hash(self, height: int) -> str:
         raise NotImplementedError
 
     async def get_block_by_height(self, height: int) -> dict:

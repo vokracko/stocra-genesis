@@ -54,7 +54,7 @@ async def test_get_block_by_height(adapter: BitcoinNodeAdapter) -> None:
 
 
 @pytest.mark.asyncio
-async def test_decode_script(adapter: BitcoinNodeAdapter) -> None:
+async def testdecode_script(adapter: BitcoinNodeAdapter) -> None:
     with aioresponses() as mocker:
         mocker.post(NODE_URL, payload=dict(result="decoded script"))
         script = await adapter.decode_script(script="script")

@@ -76,7 +76,7 @@ async def test_decode_erc20_transaction_unknown_token(parser: EthereumParser) ->
     ],
 )
 async def test_is_erc_20(parser: EthereumParser, raw_transaction: dict, expected_result: bool) -> None:
-    result = await parser.is_erc20_transfer(raw_transaction)
+    result = await parser._is_erc20_transfer(raw_transaction)
     assert result == expected_result
 
 
@@ -88,7 +88,7 @@ async def test_is_erc_20(parser: EthereumParser, raw_transaction: dict, expected
     ],
 )
 async def test_parse_recipient_erc20(parser: EthereumParser, raw_transaction: dict, expected_result: bool) -> None:
-    result = await parser.parse_recipient_erc20(raw_transaction)
+    result = await parser._parse_recipient_erc20(raw_transaction)
     assert result == expected_result
 
 
@@ -100,7 +100,7 @@ async def test_parse_recipient_erc20(parser: EthereumParser, raw_transaction: di
     ],
 )
 async def test_parse_amount_erc20(parser: EthereumParser, raw_transaction: dict, expected_result: bool) -> None:
-    result = await parser.parse_amount_erc20(raw_transaction)
+    result = await parser._parse_amount_erc20(raw_transaction)
     assert result == expected_result
 
 
@@ -112,7 +112,7 @@ async def test_parse_amount_erc20(parser: EthereumParser, raw_transaction: dict,
     ],
 )
 async def test_parse_gas_used(parser: EthereumParser, raw_receipt: dict, expected_result: Decimal) -> None:
-    result = await parser.parse_gas_used(raw_receipt)
+    result = await parser._parse_gas_used(raw_receipt)
     assert result == expected_result
 
 
@@ -124,5 +124,5 @@ async def test_parse_gas_used(parser: EthereumParser, raw_receipt: dict, expecte
     ],
 )
 async def test_parse_gas_price(parser: EthereumParser, raw_receipt: dict, expected_result: Decimal) -> None:
-    result = await parser.parse_gas_price(raw_receipt)
+    result = await parser._parse_gas_price(raw_receipt)
     assert result == expected_result
