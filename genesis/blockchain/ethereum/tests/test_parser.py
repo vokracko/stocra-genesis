@@ -14,6 +14,11 @@ from genesis.blockchain.ethereum.tests.fixtures.transaction_erc20 import (
     ERC20_TRANSACTION_DECODED,
     ERC20_TRANSACTION_JSON,
 )
+from genesis.blockchain.ethereum.tests.fixtures.transaction_erc20_failed import (
+    TRANSACTION_ERC20_FAILED_DECODED,
+    TRANSACTION_ERC20_FAILED_JSON,
+    TRANSACTION_ERC20_FAILED_RECEIPT_JSON,
+)
 from genesis.blockchain.ethereum.tests.fixtures.transaction_erc20_unknown import (
     ERC20_TRANSACTION_UNKNOWN_DECODED,
     ERC20_TRANSACTION_UNKNOWN_JSON,
@@ -67,6 +72,15 @@ async def test_decode_erc20_transaction_unknown_token(parser: EthereumParser) ->
     assert decoded_transaction == ERC20_TRANSACTION_UNKNOWN_DECODED
 
 
+@pytest.mark.asyncio
+async def test_decode_erc20_transaction_failed(parser: EthereumParser) -> None:
+    flexmock(parser.node_adapter).should_receive("get_transaction_receipt").and_return(
+        AwaitableValue(TRANSACTION_ERC20_FAILED_RECEIPT_JSON)
+    )
+    decoded_transaction = await parser.decode_transaction(TRANSACTION_ERC20_FAILED_JSON)
+    assert decoded_transaction == TRANSACTION_ERC20_FAILED_DECODED
+
+
 @pytest.mark.parametrize(
     "raw_receipt, expected_result",
     [
@@ -74,8 +88,7 @@ async def test_decode_erc20_transaction_unknown_token(parser: EthereumParser) ->
     ],
 )
 def test_parse_gas_used(parser: EthereumParser, raw_receipt: dict, expected_result: Decimal) -> None:
-    result = parser._parse_gas_used(raw_receipt)
-    assert result == expected_result
+    assert parser._parse_gas_used(raw_receipt) == expected_result
 
 
 @pytest.mark.parametrize(
@@ -85,5 +98,16 @@ def test_parse_gas_used(parser: EthereumParser, raw_receipt: dict, expected_resu
     ],
 )
 def test_parse_gas_price(parser: EthereumParser, raw_receipt: dict, expected_result: Decimal) -> None:
-    result = parser._parse_gas_price(raw_receipt)
-    assert result == expected_result
+    assert parser._parse_gas_price(raw_receipt) == expected_result
+
+
+@pytest.mark.parametrize(
+    "raw_receipt, expected_result",
+    [
+        (TRANSACTION_RECEIPT_JSON, True),
+        (ERC20_TRANSACTION_RECEIPT_JSON, True),
+        (TRANSACTION_ERC20_FAILED_RECEIPT_JSON, False),
+    ],
+)
+def test_was_successful(parser: EthereumParser, raw_receipt: dict, expected_result: bool) -> None:
+    assert parser._was_transaction_successful(raw_receipt) == expected_result

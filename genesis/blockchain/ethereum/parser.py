@@ -41,6 +41,7 @@ class EthereumParser(Parser):
         receipt = await self.node_adapter.get_transaction_receipt(raw_transaction["hash"])
         gas_used = self._parse_gas_used(receipt)
         gas_price = self._parse_gas_price(receipt)
+        was_successful = self._was_transaction_successful(receipt)
         fee = gas_used * gas_price * self.SCALING_FACTOR
         input_data = raw_transaction["input"]
 
@@ -59,7 +60,7 @@ class EthereumParser(Parser):
             outputs = [
                 PlainOutput(
                     address=output_address,
-                    amount=amount,
+                    amount=amount if was_successful else Decimal("0"),
                 ),
             ]
         else:
@@ -68,7 +69,7 @@ class EthereumParser(Parser):
         inputs = [
             PlainInput(
                 address=raw_transaction["from"],
-                amount=amount,
+                amount=amount if was_successful else Decimal("0"),
             ),
         ]
         return PlainTransaction(
@@ -76,7 +77,7 @@ class EthereumParser(Parser):
             inputs=inputs,
             outputs=outputs,
             fee=fee,
-            amount=amount,
+            amount=amount if was_successful else Decimal("0"),
             currency_symbol=currency_symbol,
         )
 
@@ -86,3 +87,6 @@ class EthereumParser(Parser):
 
     def _parse_gas_price(self, raw_receipt: dict) -> Decimal:
         return Decimal(int(raw_receipt["effectiveGasPrice"], 16))
+
+    def _was_transaction_successful(self, raw_receipt: dict) -> bool:
+        return raw_receipt["status"] == "0x1"
