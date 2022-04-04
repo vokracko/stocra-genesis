@@ -17,14 +17,14 @@ from genesis.encoders import fast_deserialize_response
 
 class CardanoNodeAdapter(NodeAdapter):
     BLOCKCHAIN: ClassVar[Blockchain] = Blockchain.CARDANO
-    connection = None
+    connection: asyncpg.connection.Connection
 
     async def init_async(self):
         self.connection = await asyncpg.connect(dsn=self.url)
 
     async def get_transaction(self, transaction_hash: str, *, verbose: bool = True) -> dict:
-        # TODO make prepared statement out of this
-        QUERY = f"""
+        # TODO statement could be prepared and stored in db upon start up
+        query = """
             SELECT 
                 tx_out.address AS address,
                 tx_out.value AS amount,
@@ -44,29 +44,44 @@ class CardanoNodeAdapter(NodeAdapter):
             LEFT JOIN tx ON tx_out.tx_id = tx.id
             WHERE tx_in.tx_in_id = (SELECT tx.id FROM tx WHERE tx.hash = decode($1, 'hex'))
         """
-        return await self.query(QUERY, transaction_hash)
+        result = await self.query(query, transaction_hash)
+        if not result:
+            raise DoesNotExist(f"Transaction with hash {transaction_hash} does not exist")
+
+        return dict(hash=transaction_hash, inputs_outputs=result)
 
     async def get_block_by_hash(self, block_hash: str) -> dict:
-        QUERY = """
+        query = """
             SELECT 
+                block.id AS id,
                 encode(block.hash, 'hex') AS hash,  
                 block.block_no AS height, 
                 extract(epoch from block.time) * 1000 AS timestamp_ms
             FROM block 
             WHERE block.hash = decode($1, 'hex')
         """
-        return await self.query(QUERY, block_hash)
+        block_data = await self.query(query, block_hash)
+
+        if not block_data:
+            raise DoesNotExist(f"Block with hash {block_hash} does not exist")
+
+        return block_data[0]
 
     async def get_block_by_height(self, height: int) -> dict:
-        QUERY = """
+        query = """
             SELECT 
+                block.id AS id,
                 encode(block.hash, 'hex') AS hash, 
                 block.block_no AS height, 
                 extract(epoch from block.time) * 1000 AS timestamp_ms
             FROM block 
             WHERE block.block_no = $1
         """
-        return await self.query(QUERY, height)
+        block_data = await self.query(query, height)
+        if not block_data:
+            raise DoesNotExist(f"Block with height {height} does not exist")
+
+        return block_data[0]
 
     async def get_block_latest(self) -> dict:
         block_height = await self.get_block_count()
@@ -82,6 +97,15 @@ class CardanoNodeAdapter(NodeAdapter):
             LIMIT 1
         """
         return await self.query(QUERY)
+
+    async def get_list_of_transactions_in_block(self, block_id: int) -> List[dict]:
+        sql = """
+            SELECT 
+                encode(tx.hash, 'hex') AS hash 
+            FROM tx 
+            WHERE tx.block_id = $1
+        """
+        return await self.query(sql, block_id)
 
     @property
     def headers(self) -> dict:
