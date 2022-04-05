@@ -43,8 +43,8 @@ TRANSACTION_DECODED = PlainTransaction(
     outputs=[
         PlainOutput(
             address=PlainAddress("1KnUs1jKkSbcNwBt7gA4PaRKhiabuVXsaT"),
-            amount=Amount(value=Decimal(50), currency_symbol=Currency.BITCOIN.symbol),
+            amount=Amount(value=Decimal("50"), currency_symbol=Currency.BITCOIN.symbol),
         ),
     ],
-    fee=Amount(value=Decimal(0), currency_symbol=Currency.BITCOIN.symbol),
+    fee=Amount(value=Decimal("0"), currency_symbol=Currency.BITCOIN.symbol),
 )
