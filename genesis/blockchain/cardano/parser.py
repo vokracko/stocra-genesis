@@ -49,10 +49,6 @@ class CardanoParser(Parser):
             hash=raw_transaction["hash"],
             inputs=inputs,
             outputs=outputs,
-            amount=Amount(
-                value=amount,
-                currency_symbol=self.CURRENCY.symbol,
-            ),
             fee=Amount(value=fee, currency_symbol=self.CURRENCY.symbol),
         )
 

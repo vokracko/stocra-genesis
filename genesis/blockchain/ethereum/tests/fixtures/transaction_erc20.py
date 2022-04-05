@@ -51,10 +51,6 @@ ERC20_TRANSACTION_DECODED = PlainTransaction(
             ),
         ),
     ],
-    amount=Amount(
-        value=ERC20_AMOUNT,
-        currency_symbol="0xdac17f958d2ee523a2206206994597c13d831ec7",
-    ),
     fee=Amount(
         value=ERC20_FEE_SCALED,
         currency_symbol=Currency.ETHER.symbol,

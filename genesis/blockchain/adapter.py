@@ -13,7 +13,7 @@ class NodeAdapter:
         self.url = url
         self.token = token
 
-    async def init_async(self):
+    async def init_async(self) -> None:
         pass
 
     async def get_transaction(self, transaction_hash: str) -> dict:

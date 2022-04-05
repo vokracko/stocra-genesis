@@ -23,7 +23,7 @@ class CardanoNodeAdapter(NodeAdapter):
     connection: Connection = None
     prepared_statements: Dict[str, PreparedStatement]
 
-    async def init_async(self):
+    async def init_async(self) -> None:
         self.connection = await connect(dsn=self.url)
         await self._prepare_statements()
 
@@ -74,7 +74,7 @@ class CardanoNodeAdapter(NodeAdapter):
         records = await self.prepared_statements[prepared_statement_index].fetch(*args)
         return [dict(record) for record in records]
 
-    def __del__(self):
+    def __del__(self) -> None:
         if self.connection:
             loop = asyncio.get_event_loop()
             loop.run_until_complete(self.connection.close())

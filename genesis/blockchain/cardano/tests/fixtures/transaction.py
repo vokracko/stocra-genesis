@@ -63,10 +63,6 @@ TRANSACTION_DECODED = PlainTransaction(
             ),
         ),
     ],
-    amount=Amount(
-        value=Decimal("0.558212"),
-        currency_symbol=Currency.ADA.symbol,
-    ),
     fee=Amount(
         value=Decimal("0.170894"),
         currency_symbol=Currency.ADA.symbol,

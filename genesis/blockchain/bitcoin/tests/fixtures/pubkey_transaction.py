@@ -46,6 +46,5 @@ TRANSACTION_DECODED = PlainTransaction(
             amount=Amount(value=Decimal(50), currency_symbol=Currency.BITCOIN.symbol),
         ),
     ],
-    amount=Amount(value=Decimal(50), currency_symbol=Currency.BITCOIN.symbol),
     fee=Amount(value=Decimal(0), currency_symbol=Currency.BITCOIN.symbol),
 )

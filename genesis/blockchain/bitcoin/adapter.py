@@ -19,7 +19,7 @@ class BitcoinNodeAdapter(NodeAdapter):
     BLOCKCHAIN: ClassVar[Blockchain] = Blockchain.BITCOIN
     session: ClientSession
 
-    async def init_async(self):
+    async def init_async(self) -> None:
         self.session = ClientSession(json_serialize=fast_serializer_to_str)
 
     async def get_transaction(self, transaction_hash: str) -> dict:
@@ -104,7 +104,7 @@ class BitcoinNodeAdapter(NodeAdapter):
         for item in result:
             yield item
 
-    def __del__(self):
+    def __del__(self) -> None:
         if self.session:
             loop = asyncio.get_event_loop()
             loop.run_until_complete(self.session.close())

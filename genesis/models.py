@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List, Optional, Dict
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, root_validator, validator
 
@@ -70,7 +70,6 @@ class PlainTransaction(BaseModel):
     hash: PlainTransactionHash
     inputs: List[PlainInput]
     outputs: List[PlainOutput]
-    amount: Amount
     fee: Amount
 
 
