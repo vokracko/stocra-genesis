@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import List, Optional
+from typing import Any, List, Optional, Dict
 
 from pydantic import BaseModel, root_validator, validator
 
@@ -19,6 +19,29 @@ class Amount(BaseModel):
     class Config:
         json_encoders = {Decimal: serialize_decimal}
 
+    def __add__(self, other: Any) -> "Amount":
+        if isinstance(other, Amount):
+            if self.currency_symbol != other.currency_symbol:
+                raise ValueError(
+                    f"Amounts have different currencies: {self.currency_symbol} != {other.currency_symbol}"
+                )
+
+            return Amount(value=self.value + other.value, currency_symbol=self.currency_symbol)
+
+        raise ValueError(f"Cannot add Amount and {type(other)}")
+
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, Amount):
+            raise ValueError(f"Cannot compare Amount and {type(other)}")
+
+        if self.value != other.value:
+            return False
+
+        if self.currency_symbol != other.currency_symbol:
+            return False
+
+        return True
+
 
 class PlainTransactionPointer(BaseModel):
     transaction_hash: PlainTransactionHash
@@ -31,7 +54,7 @@ class PlainInput(BaseModel):
     transaction_pointer: Optional[PlainTransactionPointer] = None
 
     @root_validator
-    def validate_address_or_pointer(cls, values) -> None:  # pylint: disable=no-self-argument
+    def validate_address_or_pointer(cls, values: Dict) -> Dict:  # pylint: disable=no-self-argument
         if not (values["address"] or values["transaction_pointer"]):
             raise ValueError("Either address or transaction pointer must be specified")
 
@@ -58,7 +81,7 @@ class PlainBlock(BaseModel):
     transactions: List[str] = []
 
     @validator("timestamp_ms")
-    def validate_timestamp_ms(cls, value) -> None:  # pylint: disable=no-self-argument
+    def validate_timestamp_ms(cls, value: int) -> int:  # pylint: disable=no-self-argument
         # I don't really care if this runs even after 2286
         if len(str(value)) != 13:
             raise ValueError("Timestamp must be in miliseconds")
