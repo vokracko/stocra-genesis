@@ -3,6 +3,7 @@ from typing import ClassVar, Dict, List
 
 from asyncpg import connect
 from asyncpg.connection import Connection
+from asyncpg.exceptions import PostgresConnectionError
 from asyncpg.prepared_stmt import PreparedStatement
 
 from genesis.blockchain.adapter import NodeAdapter
@@ -13,7 +14,7 @@ from genesis.blockchain.cardano.queries import (
     GET_LIST_OF_TRANSACTION_QUERY,
     GET_TRANSACTION_QUERY,
 )
-from genesis.blockchain.exceptions import DoesNotExist
+from genesis.blockchain.exceptions import DoesNotExist, Unavailable
 from genesis.blockchains import Blockchain
 
 
@@ -24,7 +25,10 @@ class CardanoNodeAdapter(NodeAdapter):
     prepared_statements: Dict[str, PreparedStatement]
 
     async def init_async(self) -> None:
-        self.connection = await connect(dsn=self.url)
+        try:
+            self.connection = await connect(dsn=self.url)
+        except OSError as exc:
+            raise Unavailable(f"Failed to connect to {self.url}") from exc
         await self._prepare_statements()
 
     async def _prepare_statements(self) -> None:
@@ -65,13 +69,19 @@ class CardanoNodeAdapter(NodeAdapter):
         return await self.get_block_by_height(block_height)
 
     async def get_block_count(self) -> int:
-        return await self.prepared_statements[self.get_block_count.__name__].fetchval()
+        try:
+            return await self.prepared_statements[self.get_block_count.__name__].fetchval()
+        except PostgresConnectionError as exc:
+            raise Unavailable(str(exc)) from exc
 
     async def get_list_of_transactions_in_block(self, block_id: int) -> List[dict]:
         return await self.query(self.get_list_of_transactions_in_block.__name__, block_id)
 
     async def query(self, prepared_statement_index: str, *args):
-        records = await self.prepared_statements[prepared_statement_index].fetch(*args)
+        try:
+            records = await self.prepared_statements[prepared_statement_index].fetch(*args)
+        except PostgresConnectionError as exc:
+            raise Unavailable(str(exc)) from exc
         return [dict(record) for record in records]
 
     def __del__(self) -> None:
