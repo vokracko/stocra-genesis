@@ -65,7 +65,7 @@ class CardanoNodeAdapter(NodeAdapter):
         return await self.get_block_by_height(block_height)
 
     async def get_block_count(self) -> int:
-        return await self.query(self.get_block_by_height.__name__)
+        return await self.prepared_statements[self.get_block_count.__name__].fetchval()
 
     async def get_list_of_transactions_in_block(self, block_id: int) -> List[dict]:
         return await self.query(self.get_list_of_transactions_in_block.__name__, block_id)
