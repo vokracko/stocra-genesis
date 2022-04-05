@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "genesis"
-version = "0.5.18"
+version = "0.5.19"
 description = ""
 authors = ["Lukáš Vokráčko <lukas@b2c2.com>"]
 
