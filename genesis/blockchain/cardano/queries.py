@@ -14,7 +14,7 @@ GET_TRANSACTION_QUERY = """
         encode(tx.hash, 'hex') AS transaction_pointer_hash,
         tx_in.tx_out_index AS transaction_pointer_index
     FROM tx_out
-    LEFT JOIN tx_in ON tx_out.id = tx_in.tx_out_id
+    LEFT JOIN tx_in ON tx_out.tx_id = tx_in.tx_out_id AND tx_out.index = tx_in.tx_out_index
     LEFT JOIN tx ON tx_out.tx_id = tx.id
     WHERE tx_in.tx_in_id = (SELECT tx.id FROM tx WHERE tx.hash = decode($1, 'hex'))
 """
