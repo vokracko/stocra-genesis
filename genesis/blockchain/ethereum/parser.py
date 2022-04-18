@@ -47,7 +47,7 @@ class EthereumParser(Parser):
 
         for decoder in self.DECODERS:
             if decoder.matches(input_data):
-                currency_symbol = raw_transaction["to"]
+                currency_symbol = raw_transaction["to"] or receipt["contractAddress"]
                 output_address = decoder.get_output_address(input_data)
                 amount_token = Amount(
                     value=decoder.get_amount(input_data),
