@@ -142,6 +142,11 @@ class BitcoinParser(Parser):
             return self._p2shpubkey_to_address(script_pub_key["asm"].split(" ")[0])
         elif script_type == "multisig":
             result = await self.node_adapter.decode_script(script_pub_key["hex"])
+            segwit_addresses = result.get("segwit", dict()).get("addresses", [])
+
+            if len(segwit_addresses) == 1:
+                return segwit_addresses[0]
+
             assert set(result.keys()).issubset({"asm", "type", "p2sh", "segwit"}), f"keys are {result.keys()}"
             return cast(str, result["p2sh"])
 
