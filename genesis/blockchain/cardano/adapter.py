@@ -1,10 +1,8 @@
 import asyncio
-from typing import ClassVar, Dict, List
+from typing import ClassVar, List
 
-from asyncpg import connect
-from asyncpg.connection import Connection
+from asyncpg import Pool, create_pool
 from asyncpg.exceptions import PostgresConnectionError
-from asyncpg.prepared_stmt import PreparedStatement
 
 from genesis.blockchain.adapter import NodeAdapter
 from genesis.blockchain.cardano.queries import (
@@ -21,36 +19,23 @@ from genesis.blockchains import Blockchain
 class CardanoNodeAdapter(NodeAdapter):
     BLOCKCHAIN: ClassVar[Blockchain] = Blockchain.CARDANO
 
-    connection: Connection = None
-    prepared_statements: Dict[str, PreparedStatement]
+    connection_pool: Pool = None
 
     async def init_async(self) -> None:
         try:
-            self.connection = await connect(dsn=self.url)
+            self.connection_pool = await create_pool(dsn=self.url)
         except OSError as exc:
             raise Unavailable(f"Failed to connect to {self.url}") from exc
-        await self._prepare_statements()
-
-    async def _prepare_statements(self) -> None:
-        self.prepared_statements = {
-            self.get_transaction.__name__: await self.connection.prepare(GET_TRANSACTION_QUERY),
-            self.get_block_by_height.__name__: await self.connection.prepare(GET_BLOCK_BY_HEIGHT_QUERY),
-            self.get_block_by_hash.__name__: await self.connection.prepare(GET_BLOCK_BY_HASH_QUERY),
-            self.get_block_count.__name__: await self.connection.prepare(GET_BLOCK_COUNT_QUERY),
-            self.get_list_of_transactions_in_block.__name__: await self.connection.prepare(
-                GET_LIST_OF_TRANSACTION_QUERY
-            ),
-        }
 
     async def get_transaction(self, transaction_hash: str) -> dict:
-        result = await self.query(self.get_transaction.__name__, transaction_hash)
+        result = await self.query(GET_TRANSACTION_QUERY, transaction_hash)
         if not result:
             raise DoesNotExist(f"Transaction with hash {transaction_hash} does not exist")
 
         return dict(hash=transaction_hash, inputs_outputs=result)
 
     async def get_block_by_hash(self, block_hash: str) -> dict:
-        block_data = await self.query(self.get_block_by_hash.__name__, block_hash)
+        block_data = await self.query(GET_BLOCK_BY_HASH_QUERY, block_hash)
 
         if not block_data:
             raise DoesNotExist(f"Block with hash {block_hash} does not exist")
@@ -58,7 +43,7 @@ class CardanoNodeAdapter(NodeAdapter):
         return block_data[0]
 
     async def get_block_by_height(self, height: int) -> dict:
-        block_data = await self.query(self.get_block_by_height.__name__, height)
+        block_data = await self.query(GET_BLOCK_BY_HEIGHT_QUERY, height)
         if not block_data:
             raise DoesNotExist(f"Block with height {height} does not exist")
 
@@ -70,21 +55,23 @@ class CardanoNodeAdapter(NodeAdapter):
 
     async def get_block_count(self) -> int:
         try:
-            return await self.prepared_statements[self.get_block_count.__name__].fetchval()
+            async with self.connection_pool.acquire() as connection:
+                return await connection.fetchval(GET_BLOCK_COUNT_QUERY)
         except PostgresConnectionError as exc:
             raise Unavailable(str(exc)) from exc
 
     async def get_list_of_transactions_in_block(self, block_id: int) -> List[dict]:
-        return await self.query(self.get_list_of_transactions_in_block.__name__, block_id)
+        return await self.query(GET_LIST_OF_TRANSACTION_QUERY, block_id)
 
-    async def query(self, prepared_statement_index: str, *args):
+    async def query(self, query: str, *args):
         try:
-            records = await self.prepared_statements[prepared_statement_index].fetch(*args)
+            async with self.connection_pool.acquire() as connection:
+                records = await connection.fetch(query, *args)
         except PostgresConnectionError as exc:
             raise Unavailable(str(exc)) from exc
         return [dict(record) for record in records]
 
     def __del__(self) -> None:
-        if self.connection:
+        if self.connection_pool:
             loop = asyncio.get_event_loop()
-            loop.run_until_complete(self.connection.close())
+            loop.run_until_complete(self.connection_pool.close())
