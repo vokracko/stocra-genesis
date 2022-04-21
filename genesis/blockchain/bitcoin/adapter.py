@@ -1,5 +1,5 @@
 import asyncio
-from typing import ClassVar, Dict, Iterable, List, Union, cast
+from typing import AsyncIterable, ClassVar, Dict, Iterable, List, Union, cast
 
 from aiohttp import ClientError, ClientResponse, ClientSession
 
@@ -55,7 +55,7 @@ class BitcoinNodeAdapter(NodeAdapter):
     async def decode_script(self, script: str) -> dict:
         return await self.post(dict(method="decodescript", params=[script]))
 
-    async def get_transactions(self, transaction_hashes: List[str]) -> Iterable[dict]:
+    async def get_transactions(self, transaction_hashes: Iterable[str]) -> AsyncIterable[dict]:
         data = [
             dict(id=i, method="getrawtransaction", params=[transaction_hash, True])
             for i, transaction_hash in enumerate(transaction_hashes, start=1)
@@ -99,10 +99,10 @@ class BitcoinNodeAdapter(NodeAdapter):
         except ClientError as exc:
             raise Unavailable("Node not available") from exc
 
-    async def post_multiple(self, *args, **kwargs) -> Iterable[Dict]:
+    async def post_multiple(self, *args, **kwargs) -> AsyncIterable[Dict]:
         result = await self._post(*args, **kwargs)
         for item in result:
-            yield item
+            yield item["result"]
 
     def __del__(self) -> None:
         if self.session:

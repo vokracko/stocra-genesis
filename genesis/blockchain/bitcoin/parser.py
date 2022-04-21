@@ -70,25 +70,31 @@ class BitcoinParser(Parser):
         return transaction
 
     async def _get_decoded_inputs_from_raw_transaction(self, raw_transaction: dict) -> List[PlainInput]:
-        input_transactions = []
+        decoded_input_transactions = dict()
+        transaction_pointers = []
+        input_transaction_ids = set()
         inputs = []
-        transaction_pointers = {vin["txid"]: vin["vout"] for vin in raw_transaction["vin"]}
 
-        async for input_transaction in await self.node_adapter.get_transactions(transaction_pointers.keys()):
-            input_transactions.append(input_transaction)
+        for vin in raw_transaction["vin"]:
+            transaction_pointer = PlainTransactionPointer(
+                transaction_hash=vin["txid"],
+                output_index=vin["vout"],
+            )
+            transaction_pointers.append(transaction_pointer)
+            input_transaction_ids.add(transaction_pointer.transaction_hash)
 
-        transactions_sorted = sorted(input_transactions, key=lambda item: item["id"])
+        async for input_transaction in await self.node_adapter.get_transactions(input_transaction_ids):
+            decoded_input_transaction = await self.decode_transaction_without_inputs(input_transaction)
+            decoded_input_transactions[decoded_input_transaction.hash] = decoded_input_transaction
 
-        for (transaction_pointer_txid, transaction_pointer_vout), transaction in zip(
-            transaction_pointers.items(), transactions_sorted
-        ):
-            decoded_input_transaction = await self.decode_transaction_without_inputs(transaction["result"])
+        for transaction_pointer in transaction_pointers:
+            decoded_transaction = decoded_input_transactions[transaction_pointer.transaction_hash]
             input_ = PlainInput(
-                address=decoded_input_transaction.outputs[transaction_pointer_vout].address,
-                amount=decoded_input_transaction.outputs[transaction_pointer_vout].amount,
+                address=decoded_transaction.outputs[transaction_pointer.output_index].address,
+                amount=decoded_transaction.outputs[transaction_pointer.output_index].amount,
                 transaction_pointer=PlainTransactionPointer(
-                    transaction_hash=transaction_pointer_txid,
-                    output_index=transaction_pointer_vout,
+                    transaction_hash=transaction_pointer.transaction_hash,
+                    output_index=transaction_pointer.output_index,
                 ),
             )
             inputs.append(input_)
