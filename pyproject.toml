@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "genesis"
-version = "0.5.28"
+version = "0.5.29"
 description = ""
 authors = ["Lukáš Vokráčko <lukas@b2c2.com>"]
 
@@ -85,19 +85,19 @@ warn_unused_configs = true
 [tool.pytest.ini_options]
 cache_dir = "/dev/null"
 
-[tool.logging518]
+[tool.logging]
 version = 1
 disable_existing_loggers = 0
 
-[tool.logging518.formatters.standard]
+[tool.logging.formatters.standard]
 format = "%(asctime)s [%(levelname)s] %(name)s | %(message)s"
 
-[tool.logging518.handlers.console]
+[tool.logging.handlers.console]
 class = "logging.StreamHandler"
 formatter = "standard"
 level = "INFO"
 stream = "ext://sys.stderr"
 
-[tool.logging518.root]
+[tool.logging.root]
 handlers = ["console"]
 level = "INFO"

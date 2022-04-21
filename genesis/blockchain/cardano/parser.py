@@ -1,12 +1,11 @@
 from decimal import Decimal
 from typing import ClassVar, List
 
-import logging518 as logging
-
 from genesis.blockchain.cardano.adapter import CardanoNodeAdapter
 from genesis.blockchain.parser import Parser
 from genesis.blockchains import Blockchain
 from genesis.currencies import Currency
+from genesis.logging import get_logger
 from genesis.models import (
     Amount,
     PlainBlock,
@@ -16,7 +15,7 @@ from genesis.models import (
     PlainTransactionPointer,
 )
 
-logger = logging.get_logger(__name__)
+logger = get_logger(__name__)
 
 
 class CardanoParser(Parser):

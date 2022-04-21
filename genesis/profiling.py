@@ -2,7 +2,7 @@ import timeit
 from contextlib import contextmanager
 from typing import Generator
 
-import logging518 as logging
+from genesis.logging import logger
 
 
 @contextmanager
@@ -12,4 +12,4 @@ def log_duration(name: str) -> Generator:
         yield
     finally:
         elapsed_seconds = timeit.default_timer() - start_time
-        logging.logger.info("%s: elapsed seconds: %s", name, elapsed_seconds)
+        logger.info("%s: elapsed seconds: %s", name, elapsed_seconds)

@@ -4,13 +4,13 @@ from decimal import Decimal
 from typing import ClassVar, List, cast
 
 import base58
-import logging518 as logging
 
 from genesis.blockchain.bitcoin.adapter import BitcoinNodeAdapter
 from genesis.blockchain.exceptions import UnknownScriptPubKey
 from genesis.blockchain.parser import Parser
 from genesis.blockchains import Blockchain
 from genesis.currencies import Currency
+from genesis.logging import get_logger
 from genesis.models import (
     Amount,
     PlainAddress,
@@ -21,7 +21,7 @@ from genesis.models import (
     PlainTransactionPointer,
 )
 
-logger = logging.get_logger(__name__)
+logger = get_logger(__name__)
 
 
 class BitcoinParser(Parser):

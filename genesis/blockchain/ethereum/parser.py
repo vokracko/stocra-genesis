@@ -1,8 +1,6 @@
 from decimal import Decimal
 from typing import ClassVar, Dict, List
 
-from logging518 import get_logger
-
 from genesis.blockchain.ethereum.adapter import EthereumNodeAdapter
 from genesis.blockchain.ethereum.decoders.decoder import Decoder
 from genesis.blockchain.ethereum.decoders.erc20 import ERC20Decoder
@@ -10,6 +8,7 @@ from genesis.blockchain.ethereum.tokens import TOKENS
 from genesis.blockchain.parser import Parser
 from genesis.blockchains import Blockchain
 from genesis.currencies import Currency
+from genesis.logging import get_logger
 from genesis.models import Amount, PlainBlock, PlainInput, PlainOutput, PlainTransaction
 
 logger = get_logger(__name__)
