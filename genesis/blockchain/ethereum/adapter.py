@@ -89,7 +89,11 @@ class EthereumNodeAdapter(NodeAdapter):
 
     @staticmethod
     async def _get_json_or_raise_response_error_aiohttp(response: ClientResponse) -> dict:
-        result = await fast_deserialize_response(response)
+        try:
+            result = await fast_deserialize_response(response)
+        except asyncio.TimeoutError as exc:
+            raise Unavailable("Timeour error") from exc
+
         if "error" in result:
             error = result["error"]
             if error["code"] == -32602:

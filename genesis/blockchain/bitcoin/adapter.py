@@ -86,7 +86,10 @@ class BitcoinNodeAdapter(NodeAdapter):
 
             raise UnknownNodeException(await response.text())
 
-        return await fast_deserialize_response(response)
+        try:
+            return await fast_deserialize_response(response)
+        except asyncio.TimeoutError as exc:
+            raise Unavailable("Timeour error") from exc
 
     async def post(self, data: dict) -> Dict:
         result = await self._post(data)
