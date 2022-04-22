@@ -11448,9 +11448,6 @@ TOKENS = {
     "0x0af44e2784637218dd1d32a322d44e603a8f0c6a": TokenInfo(
         type=TokenType.ERC20, currency=CurrencyInfo(symbol="MTX", name="Matryx"), scaling=Decimal("1e-18")
     ),
-    "0x0af44e2784637218dd1d32a322d44e603a8f0c6a": TokenInfo(
-        type=TokenType.ERC20, currency=CurrencyInfo(symbol="MTX", name="MATRYX"), scaling=Decimal("1e-18")
-    ),
     "0x7ed07b51975d9e8363b568b2d725be8f3e8516cf": TokenInfo(
         type=TokenType.ERC20,
         currency=CurrencyInfo(symbol="MUFC", name="Manchester United Fan Token"),
