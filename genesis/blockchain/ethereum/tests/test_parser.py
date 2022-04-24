@@ -31,6 +31,11 @@ from genesis.blockchain.ethereum.tests.fixtures.transaction_receipt import (
 from genesis.blockchain.ethereum.tests.fixtures.transaction_receipt_erc20 import (
     ERC20_TRANSACTION_RECEIPT_JSON,
 )
+from genesis.blockchain.ethereum.tests.fixtures.transaction_smart_contract_creation import (
+    TRANSACTION_SMART_CONTRACT_CREATION_DECODED,
+    TRANSACTION_SMART_CONTRACT_CREATION_JSON,
+    TRANSACTION_SMART_CONTRACT_CREATION_RECEIPT_JSON,
+)
 from genesis.blockchain.tests.utils import AwaitableValue
 
 
@@ -79,6 +84,15 @@ async def test_decode_erc20_transaction_failed(parser: EthereumParser) -> None:
     )
     decoded_transaction = await parser.decode_transaction(TRANSACTION_ERC20_FAILED_JSON)
     assert decoded_transaction == TRANSACTION_ERC20_FAILED_DECODED
+
+
+@pytest.mark.asyncio
+async def test_decode_smart_contract_creation_transaction(parser: EthereumParser) -> None:
+    flexmock(parser.node_adapter).should_receive("get_transaction_receipt").and_return(
+        AwaitableValue(TRANSACTION_SMART_CONTRACT_CREATION_RECEIPT_JSON)
+    )
+    decoded_transaction = await parser.decode_transaction(TRANSACTION_SMART_CONTRACT_CREATION_JSON)
+    assert decoded_transaction == TRANSACTION_SMART_CONTRACT_CREATION_DECODED
 
 
 @pytest.mark.parametrize(
