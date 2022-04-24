@@ -141,4 +141,4 @@ class EthereumParser(Parser):
         return Decimal(int(raw_receipt["effectiveGasPrice"], 16))
 
     def _was_transaction_successful(self, raw_receipt: dict) -> bool:
-        return raw_receipt["status"] == "0x1"
+        return raw_receipt.get("status", "0x1") == "0x1"

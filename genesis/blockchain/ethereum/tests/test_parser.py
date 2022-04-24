@@ -121,6 +121,7 @@ def test_parse_gas_price(parser: EthereumParser, raw_receipt: dict, expected_res
         (TRANSACTION_RECEIPT_JSON, True),
         (ERC20_TRANSACTION_RECEIPT_JSON, True),
         (TRANSACTION_ERC20_FAILED_RECEIPT_JSON, False),
+        (dict(), True),
     ],
 )
 def test_was_successful(parser: EthereumParser, raw_receipt: dict, expected_result: bool) -> None:
