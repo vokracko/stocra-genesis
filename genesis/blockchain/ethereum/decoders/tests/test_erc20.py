@@ -27,7 +27,7 @@ def test_matches(raw_transaction: dict, expected_result: bool) -> None:
     ],
 )
 def test_get_output_address(raw_transaction: dict, expected_result: bool) -> None:
-    assert ERC20Decoder.get_output_address(raw_transaction["input"]) == expected_result
+    assert ERC20Decoder(raw_transaction["input"]).get_output_address() == expected_result
 
 
 @pytest.mark.parametrize(
@@ -37,4 +37,4 @@ def test_get_output_address(raw_transaction: dict, expected_result: bool) -> Non
     ],
 )
 def test_get_amount(raw_transaction: dict, expected_result: bool) -> None:
-    assert ERC20Decoder.get_amount(raw_transaction["input"]) == expected_result
+    assert ERC20Decoder(raw_transaction["input"]).get_amount() == expected_result

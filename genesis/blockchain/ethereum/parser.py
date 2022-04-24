@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import ClassVar, Dict, List
+from typing import ClassVar, Dict, List, Optional, Tuple, Type
 
 from genesis.blockchain.ethereum.adapter import EthereumNodeAdapter
 from genesis.blockchain.ethereum.decoders.decoder import Decoder
@@ -21,7 +21,7 @@ class EthereumParser(Parser):
 
     TOKENS: ClassVar[Dict] = TOKENS
     SCALING_FACTOR = Decimal("1e-18")
-    DECODERS: List[Decoder] = [
+    DECODERS: List[Type[Decoder]] = [
         ERC20Decoder,
     ]
 
@@ -39,64 +39,7 @@ class EthereumParser(Parser):
     async def decode_transaction(self, raw_transaction: dict) -> PlainTransaction:
         receipt = await self.node_adapter.get_transaction_receipt(raw_transaction["hash"])
         fee_amount = self._get_fee_amount(receipt)
-        was_successful = self._was_transaction_successful(receipt)
-        input_data = raw_transaction["input"]
-        inputs = []
-        outputs = []
-
-        for decoder in self.DECODERS:
-            if decoder.matches(input_data):
-                currency_symbol = raw_transaction["to"] or receipt["contractAddress"]
-                output_address = decoder.get_output_address(input_data)
-                amount_token = Amount(
-                    value=decoder.get_amount(input_data),
-                    currency_symbol=currency_symbol,
-                )
-                inputs.append(
-                    PlainInput(
-                        address=raw_transaction["from"],
-                        amount=fee_amount,
-                    )
-                )
-
-                if was_successful:
-                    inputs.append(
-                        PlainInput(
-                            address=raw_transaction["from"],
-                            amount=amount_token,
-                        )
-                    )
-                    outputs.append(
-                        PlainOutput(
-                            address=output_address,
-                            amount=amount_token,
-                        )
-                    )
-                break
-        else:
-            currency_symbol = self.CURRENCY.symbol
-            output_address = raw_transaction["to"]
-            output_amount = Amount(
-                value=Decimal(int(raw_transaction["value"], 16)) * self.SCALING_FACTOR,
-                currency_symbol=currency_symbol,
-            )
-            inputs = [
-                (
-                    PlainInput(
-                        address=raw_transaction["from"],
-                        amount=output_amount + fee_amount if was_successful else fee_amount,
-                    )
-                )
-            ]
-
-            if was_successful:
-                outputs = [
-                    PlainOutput(
-                        address=output_address,
-                        amount=output_amount,
-                    )
-                ]
-
+        inputs, outputs = self._get_inputs_and_outputs(fee_amount, raw_transaction, receipt)
         return PlainTransaction(
             hash=raw_transaction["hash"],
             inputs=inputs,
@@ -104,7 +47,85 @@ class EthereumParser(Parser):
             fee=fee_amount,
         )
 
-    def _get_fee_amount(self, receipt) -> Amount:
+    def _get_smart_contract_decoder(self, raw_transaction: dict) -> Optional[Decoder]:
+        input_data = raw_transaction["input"]
+
+        for decoder in self.DECODERS:
+            if decoder.matches(input_data):
+                return decoder(input_data)
+
+        return None
+
+    def _get_inputs_and_outputs(
+        self, fee_amount, raw_transaction, receipt
+    ) -> Tuple[List[PlainInput], List[PlainOutput]]:
+        decoder = self._get_smart_contract_decoder(raw_transaction)
+        if decoder:
+            return self._get_inputs_and_outputs_from_smart_contract(decoder, raw_transaction, receipt, fee_amount)
+
+        return self._get_inputs_and_outputs_from_normal_transaction(raw_transaction, receipt, fee_amount)
+
+    def _get_inputs_and_outputs_from_normal_transaction(
+        self, raw_transaction: dict, receipt: dict, fee_amount: Decimal
+    ) -> Tuple[List[PlainInput], List[PlainOutput]]:
+        was_successful = self._was_transaction_successful(receipt)
+        outputs = []
+        currency_symbol = self.CURRENCY.symbol
+        output_address = raw_transaction["to"]
+        output_amount = Amount(
+            value=Decimal(int(raw_transaction["value"], 16)) * self.SCALING_FACTOR,
+            currency_symbol=currency_symbol,
+        )
+        inputs = [
+            PlainInput(
+                address=raw_transaction["from"],
+                amount=output_amount + fee_amount if was_successful else fee_amount,
+            )
+        ]
+
+        if was_successful and raw_transaction["to"] is not None:
+            outputs = [
+                PlainOutput(
+                    address=output_address,
+                    amount=output_amount,
+                )
+            ]
+        return inputs, outputs
+
+    def _get_inputs_and_outputs_from_smart_contract(
+        self, decoder: Decoder, raw_transaction: dict, receipt: dict, fee_amount: Decimal
+    ) -> Tuple[List[PlainInput], List[PlainOutput]]:
+        was_successful = self._was_transaction_successful(receipt)
+        outputs = []
+        inputs = [
+            PlainInput(
+                address=raw_transaction["from"],
+                amount=fee_amount,
+            )
+        ]
+        if was_successful:
+            currency_symbol = raw_transaction["to"] or receipt["contractAddress"]
+            output_address = decoder.get_output_address()
+            amount_token = Amount(
+                value=decoder.get_amount(),
+                currency_symbol=currency_symbol,
+            )
+            inputs.append(
+                PlainInput(
+                    address=raw_transaction["from"],
+                    amount=amount_token,
+                )
+            )
+            outputs.append(
+                PlainOutput(
+                    address=output_address,
+                    amount=amount_token,
+                )
+            )
+
+        return inputs, outputs
+
+    def _get_fee_amount(self, receipt: dict) -> Amount:
         gas_used = self._parse_gas_used(receipt)
         gas_price = self._parse_gas_price(receipt)
         return Amount(

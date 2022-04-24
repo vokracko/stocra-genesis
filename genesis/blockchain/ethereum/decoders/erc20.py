@@ -14,12 +14,10 @@ class ERC20Decoder(Decoder):
     def matches(input_data: str) -> bool:
         return input_data.startswith(TRANSFER_PREFIX)
 
-    @staticmethod
-    def get_amount(input_data: str) -> Decimal:
-        amount_hex = input_data[AMOUNT_OFFSET:]
+    def get_amount(self) -> Decimal:
+        amount_hex = self.input_data[AMOUNT_OFFSET:]
         return Decimal(int(amount_hex, 16))
 
-    @staticmethod
-    def get_output_address(input_data: str) -> str:
-        address_without_prefix = input_data[ADDRESS_OFFSET:ADDRESS_LENGTH]
+    def get_output_address(self) -> str:
+        address_without_prefix = self.input_data[ADDRESS_OFFSET:ADDRESS_LENGTH]
         return f"0x{address_without_prefix}"
