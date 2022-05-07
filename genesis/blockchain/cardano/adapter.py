@@ -1,7 +1,7 @@
 import asyncio
 from typing import ClassVar, List
 
-from asyncpg import Pool, create_pool
+from asyncpg import Pool, create_pool, PostgresError
 from asyncpg.exceptions import PostgresConnectionError
 
 from genesis.blockchain.adapter import NodeAdapter
@@ -24,7 +24,7 @@ class CardanoNodeAdapter(NodeAdapter):
     async def init_async(self) -> None:
         try:
             self.connection_pool = await create_pool(dsn=self.url)
-        except OSError as exc:
+        except (OSError, PostgresError) as exc:
             raise Unavailable(f"Failed to connect to {self.url}") from exc
 
     async def get_transaction(self, transaction_hash: str) -> dict:
