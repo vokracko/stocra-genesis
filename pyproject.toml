@@ -1,12 +1,11 @@
 [tool.poetry]
 name = "genesis"
-version = "0.5.35"
+version = "0.5.36"
 description = ""
 authors = ["Lukáš Vokráčko <lukas@b2c2.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-logging518 = "*"
 setuptools = "*"
 requests = "*"
 base58 = "*"
@@ -14,6 +13,8 @@ aiohttp = "*"
 pydantic = "*"
 orjson = "*"
 asyncpg = "*"
+bunyan = "*"
+PyYAML = "*"
 
 [tool.poetry.dev-dependencies]
 mypy = "*"
@@ -84,20 +85,3 @@ warn_unused_configs = true
 
 [tool.pytest.ini_options]
 cache_dir = "/dev/null"
-
-[tool.logging]
-version = 1
-disable_existing_loggers = 0
-
-[tool.logging.formatters.standard]
-format = "%(asctime)s [%(levelname)s] %(name)s | %(message)s"
-
-[tool.logging.handlers.console]
-class = "logging.StreamHandler"
-formatter = "standard"
-level = "INFO"
-stream = "ext://sys.stderr"
-
-[tool.logging.root]
-handlers = ["console"]
-level = "INFO"

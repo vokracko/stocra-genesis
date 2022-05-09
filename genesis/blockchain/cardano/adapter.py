@@ -1,7 +1,7 @@
 import asyncio
 from typing import ClassVar, List
 
-from asyncpg import Pool, create_pool, PostgresError
+from asyncpg import Pool, PostgresError, create_pool
 from asyncpg.exceptions import PostgresConnectionError
 
 from genesis.blockchain.adapter import NodeAdapter
