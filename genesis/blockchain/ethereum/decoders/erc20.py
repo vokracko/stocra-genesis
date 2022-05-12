@@ -15,7 +15,7 @@ class ERC20Decoder(Decoder):
         return input_data.startswith(TRANSFER_PREFIX)
 
     def get_amount(self) -> Decimal:
-        amount_hex = self.input_data[AMOUNT_OFFSET:]
+        amount_hex = self.input_data[AMOUNT_OFFSET:] or "0"
         return Decimal(int(amount_hex, 16))
 
     def get_output_address(self) -> str:
