@@ -153,7 +153,9 @@ class BitcoinParser(Parser):
             if len(segwit_addresses) == 1:
                 return segwit_addresses[0]
 
-            assert set(result.keys()).issubset({"asm", "desc", "type", "p2sh", "segwit"}), f"keys are {result.keys()}"
+            assert set(result.keys()).issubset(
+                {"asm", "desc", "type", "p2sh", "segwit", "reqSigs", "addresses"}
+            ), f"keys are {result.keys()}"
             return cast(str, result["p2sh"])
 
         raise UnknownScriptPubKey(script_type)
