@@ -55,19 +55,28 @@ class CardanoParser(Parser):
         inputs = []
 
         for input_output in inputs_outputs:
-            if not input_output["transaction_pointer_hash"]:
+            if input_output["type"] == "txin":
+                input_ = PlainInput(
+                    address=input_output["address"],
+                    amount=Amount(
+                        value=Decimal(str(input_output["amount"])) * self.LOVELACE_SCALE,
+                        currency_symbol=self.CURRENCY.symbol,
+                    ),
+                    transaction_pointer=PlainTransactionPointer(
+                        transaction_hash=input_output["transaction_pointer_hash"],
+                        output_index=input_output["transaction_pointer_index"],
+                    ),
+                )
+            elif input_output["type"] == "withdrawal":
+                input_ = PlainInput(
+                    address=input_output["address"],
+                    amount=Amount(
+                        value=Decimal(str(input_output["amount"])) * self.LOVELACE_SCALE,
+                        currency_symbol=self.CURRENCY.symbol,
+                    ),
+                )
+            else:
                 continue
-            input_ = PlainInput(
-                address=input_output["address"],
-                amount=Amount(
-                    value=Decimal(str(input_output["amount"])) * self.LOVELACE_SCALE,
-                    currency_symbol=self.CURRENCY.symbol,
-                ),
-                transaction_pointer=PlainTransactionPointer(
-                    transaction_hash=input_output["transaction_pointer_hash"],
-                    output_index=input_output["transaction_pointer_index"],
-                ),
-            )
             inputs.append(input_)
 
         return inputs
@@ -76,7 +85,7 @@ class CardanoParser(Parser):
         outputs = []
 
         for input_output in inputs_outputs:
-            if input_output["transaction_pointer_hash"]:
+            if input_output["type"] != "txout":
                 continue
             output = PlainOutput(
                 address=input_output["address"],

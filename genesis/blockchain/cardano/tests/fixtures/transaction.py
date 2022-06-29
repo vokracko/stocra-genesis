@@ -17,18 +17,21 @@ TRANSACTION_JSON = {
             "amount": Decimal("2.0E+5"),
             "transaction_pointer_hash": None,
             "transaction_pointer_index": None,
+            "type": "txout",
         },
         {
             "address": "DdzFFzCqrht8wAQiwNCromuPxNjQoK2Cs2vMiVFwFYYAQCcA1nPs7BMXFYhZZVBYhAKexYhaiA8xCUW8EEnc4Wdn6X5zD7R9xcabHip8",
             "amount": Decimal("358212"),
             "transaction_pointer_hash": None,
             "transaction_pointer_index": None,
+            "type": "txout",
         },
         {
             "address": "DdzFFzCqrhsm6jrC1KFcWNENb2PE171SDpg4rpaLytzVNFSsC8yGQpLggMTTSpedAKHmBUu9LtudohiHZ2zVjRKah38DVJyGVjWZoZPd",
             "amount": Decimal("729106"),
             "transaction_pointer_hash": "dbd87b3876da9847c01b7f229a4126ea113cdd17494ba6b86e714b4ca1864fcd",
             "transaction_pointer_index": 0,
+            "type": "txin",
         },
     ],
 }
