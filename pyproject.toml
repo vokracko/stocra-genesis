@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "genesis"
-version = "0.5.43"
+version = "0.5.44"
 description = ""
 authors = ["Lukáš Vokráčko <lukas@b2c2.com>"]
 
@@ -68,7 +68,7 @@ max-complexity = 10
 ignore-imports = "yes"
 
 [tool.mypy]
-python_version = 3.9
+python_version = 3.10
 exclude = "test_*|cli.py"
 cache_dir = "/dev/null"
 disallow_untyped_calls = true

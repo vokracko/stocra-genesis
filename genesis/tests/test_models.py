@@ -3,7 +3,7 @@ from decimal import Decimal
 import pytest
 
 from genesis.currencies import Currency
-from genesis.models import Amount
+from genesis.models import Amount, PlainTransaction
 
 
 def test_amount_add():
@@ -53,3 +53,10 @@ def test_amount_equal(first, second, expected_result):
 def test_amount_equal_wrong_type():
     with pytest.raises(ValueError):
         Amount(value=Decimal("1"), currency_symbol=Currency.BITCOIN.symbol) == Decimal("1")
+
+
+def test_negative_fee():
+    with pytest.raises(ValueError):
+        PlainTransaction(
+            fee=Amount(value=Decimal("-1"), currency_symbol=Currency.BITCOIN.value)
+        )

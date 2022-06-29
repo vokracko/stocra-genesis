@@ -78,6 +78,13 @@ class PlainTransaction(BaseModel):
     outputs: List[PlainOutput]
     fee: Amount
 
+    @validator("fee")
+    def validate_fee(cls, value: Amount) -> Amount:
+        if value.value < 0:
+            raise ValueError(f"Fee cannot be negative! Got {value.value}")
+
+        return value
+
     class Config:
         json_encoders = {Decimal: serialize_decimal}
 
