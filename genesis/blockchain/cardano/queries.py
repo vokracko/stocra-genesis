@@ -39,7 +39,7 @@ WITHDRAWAL_QUERY = """
 STAKE_REGISTRATION_QUERY = """
     SELECT
         stake_address.view AS address,
-        ABS(tx.deposit) AS amount,
+        2000000::int AS amount,
         NULL AS transaction_pointer_hash,
         NULL::int AS transaction_pointer_index,
         'stake_registration' AS type
@@ -52,7 +52,7 @@ STAKE_REGISTRATION_QUERY = """
 STAKE_DEREGISTRATION_QUERY = """
     SELECT
         stake_address.view AS address,
-        ABS(tx.deposit) AS amount,
+        2000000::int AS amount,
         NULL AS transaction_pointer_hash,
         NULL::int AS transaction_pointer_index,
         'stake_deregistration' AS type
