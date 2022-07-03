@@ -1,4 +1,4 @@
-GET_TRANSACTION_QUERY = """
+TX_OUT_QUERY = """
     SELECT
         tx_out.address AS address,
         tx_out.value AS amount,
@@ -8,18 +8,9 @@ GET_TRANSACTION_QUERY = """
     FROM tx_out
     LEFT JOIN tx ON tx_out.tx_id = tx.id
     WHERE tx.hash = decode($1, 'hex')
-    UNION
-    SELECT
-        stake_address.view AS address,
-        withdrawal.amount AS amount,
-        NULL AS transaction_pointer_hash,
-        NULL::int AS transaction_pointer_index,
-        'withdrawal' AS type
-    FROM withdrawal
-    LEFT JOIN stake_address ON withdrawal.addr_id = stake_address.id
-    LEFT JOIN tx ON tx.id = withdrawal.tx_id
-    WHERE tx.hash = decode($1, 'hex')
-    UNION
+"""
+
+TX_IN_QUERY = """
     SELECT
         tx_out.address AS address,
         tx_out.value AS amount,
@@ -30,7 +21,57 @@ GET_TRANSACTION_QUERY = """
     LEFT JOIN tx_in ON tx_out.tx_id = tx_in.tx_out_id AND tx_out.index = tx_in.tx_out_index
     LEFT JOIN tx ON tx_out.tx_id = tx.id
     WHERE tx_in.tx_in_id = (SELECT tx.id FROM tx WHERE tx.hash = decode($1, 'hex'))
+"""
 
+WITHDRAWAL_QUERY = """
+    SELECT
+        stake_address.view AS address,
+        withdrawal.amount AS amount,
+        NULL AS transaction_pointer_hash,
+        NULL::int AS transaction_pointer_index,
+        'withdrawal' AS type
+    FROM withdrawal
+    INNER JOIN stake_address ON withdrawal.addr_id = stake_address.id
+    INNER JOIN tx ON tx.id = withdrawal.tx_id
+    WHERE tx.hash = decode($1, 'hex')
+"""
+
+STAKE_REGISTRATION_QUERY = """
+    SELECT
+        stake_address.view AS address,
+        ABS(tx.deposit) AS amount,
+        NULL AS transaction_pointer_hash,
+        NULL::int AS transaction_pointer_index,
+        'stake_registration' AS type
+    FROM tx
+    INNER JOIN stake_registration ON stake_registration.tx_id = tx.id
+    INNER JOIN stake_address ON stake_address.id = stake_registration.addr_id
+    WHERE tx.hash = decode($1, 'hex')
+"""
+
+STAKE_DEREGISTRATION_QUERY = """
+    SELECT
+        stake_address.view AS address,
+        ABS(tx.deposit) AS amount,
+        NULL AS transaction_pointer_hash,
+        NULL::int AS transaction_pointer_index,
+        'stake_deregistration' AS type
+    FROM tx
+    INNER JOIN stake_deregistration ON stake_deregistration.tx_id = tx.id
+    INNER JOIN stake_address ON stake_address.id = stake_deregistration.addr_id
+    WHERE tx.hash = decode($1, 'hex')
+"""
+
+GET_TRANSACTION_QUERY = f"""
+    {TX_OUT_QUERY}
+    UNION
+    {WITHDRAWAL_QUERY}
+    UNION
+    {STAKE_REGISTRATION_QUERY}
+    UNION
+    {STAKE_DEREGISTRATION_QUERY}
+    UNION
+    {TX_IN_QUERY}
 """
 
 GET_BLOCK_BY_HASH_QUERY = """

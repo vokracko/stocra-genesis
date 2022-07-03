@@ -67,7 +67,7 @@ class CardanoParser(Parser):
                         output_index=input_output["transaction_pointer_index"],
                     ),
                 )
-            elif input_output["type"] == "withdrawal":
+            elif input_output["type"] in ["withdrawal", "stake_deregistration"]:
                 input_ = PlainInput(
                     address=input_output["address"],
                     amount=Amount(
@@ -85,16 +85,15 @@ class CardanoParser(Parser):
         outputs = []
 
         for input_output in inputs_outputs:
-            if input_output["type"] != "txout":
-                continue
-            output = PlainOutput(
-                address=input_output["address"],
-                amount=Amount(
-                    value=Decimal(str(input_output["amount"])) * self.LOVELACE_SCALE,
-                    currency_symbol=self.CURRENCY.symbol,
-                ),
-            )
-            outputs.append(output)
+            if input_output["type"] in ["txout", "stake_registration"]:
+                output = PlainOutput(
+                    address=input_output["address"],
+                    amount=Amount(
+                        value=Decimal(str(input_output["amount"])) * self.LOVELACE_SCALE,
+                        currency_symbol=self.CURRENCY.symbol,
+                    ),
+                )
+                outputs.append(output)
 
         return outputs
 
