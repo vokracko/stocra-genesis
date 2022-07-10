@@ -12,4 +12,4 @@ def log_duration(name: str) -> Generator:
         yield
     finally:
         elapsed_seconds = timeit.default_timer() - start_time
-        logger.info("%s: elapsed seconds: %s", name, elapsed_seconds)
+        logger.info("%s: elapsed seconds: %.10f", name, elapsed_seconds)
