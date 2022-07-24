@@ -1,9 +1,6 @@
-import hashlib
 import json
 from decimal import Decimal
 from typing import ClassVar, List, cast
-
-import base58
 
 from genesis.blockchain.bitcoin.adapter import BitcoinNodeAdapter
 from genesis.blockchain.exceptions import UnknownScriptPubKey
@@ -144,9 +141,7 @@ class BitcoinParser(Parser):
             return "nonstandard"
         elif script_type == "nulldata":
             return "null"
-        elif script_type == "pubkey":
-            return self._p2shpubkey_to_address(script_pub_key["asm"].split(" ")[0])
-        elif script_type == "multisig":
+        elif script_type in ["multisig", "pubkey"]:
             result = await self.node_adapter.decode_script(script_pub_key["hex"])
             segwit_addresses = result.get("segwit", dict()).get("addresses", [])
 
@@ -159,14 +154,3 @@ class BitcoinParser(Parser):
             return cast(str, result["p2sh"])
 
         raise UnknownScriptPubKey(script_type)
-
-    def _p2shpubkey_to_address(self, p2sh_pubkey: str) -> str:
-        step_1 = hashlib.sha256(bytes.fromhex(p2sh_pubkey)).digest()
-        step_2 = hashlib.new("ripemd160", step_1).digest()
-        step_3 = bytes.fromhex("00") + step_2
-        step_4 = hashlib.sha256(step_3).digest()
-        step_5 = hashlib.sha256(step_4).digest()
-        step_6 = step_5[:4]  # first 4 bytes
-        step_7 = step_3 + step_6
-        step_8 = base58.b58encode(step_7)
-        return step_8.decode()

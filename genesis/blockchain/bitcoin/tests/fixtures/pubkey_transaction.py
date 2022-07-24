@@ -10,7 +10,6 @@ from genesis.models import (
 )
 
 TRANSACTION_HASH = "682fd04fe5a80d2e238074e2c28d3ecb7c85786326fb96dd0527865f11aee8ed"
-
 TRANSACTION_JSON = {
     "txid": TRANSACTION_HASH,
     "hash": TRANSACTION_HASH,
@@ -37,12 +36,18 @@ TRANSACTION_JSON = {
     "time": 1273915632,
     "blocktime": 1273915632,
 }
+DECODED_SCRIPT_PUB_KEY = dict(
+    asm="04c7b1f1d0537b9d800f4413e0222370f7fb8c3844fc98dafe9bdbfea27650ef78d3cb89ab50224934c6473e8e925cfdb42c4c6f32145bf4ea87ecda17a0e24e4f OP_CHECKSIG",
+    desc="pk(04c7b1f1d0537b9d800f4413e0222370f7fb8c3844fc98dafe9bdbfea27650ef78d3cb89ab50224934c6473e8e925cfdb42c4c6f32145bf4ea87ecda17a0e24e4f)#gn32dy5k",
+    type="pubkey",
+    p2sh="3HXmtKQGES34NaXhFAf5bSG1Fz8wgBxeEV",
+)
 TRANSACTION_DECODED = PlainTransaction(
     hash=PlainTransactionHash(TRANSACTION_HASH),
     inputs=[],
     outputs=[
         PlainOutput(
-            address=PlainAddress("1KnUs1jKkSbcNwBt7gA4PaRKhiabuVXsaT"),
+            address=PlainAddress("3HXmtKQGES34NaXhFAf5bSG1Fz8wgBxeEV"),
             amount=Amount(value=Decimal("50"), currency_symbol=Currency.BITCOIN.symbol),
         ),
     ],
