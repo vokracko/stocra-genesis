@@ -81,11 +81,11 @@ async def test_decode_pubkey_transaction(parser: BitcoinParser) -> None:
     ],
 )
 @pytest.mark.asyncio
-async def test_decode_address_from_script_pub_key_segwit(
+async def test_get_address_from_script_pub_key(
     parser: BitcoinParser, script_pub_key: dict, decoded: dict, address: str
 ) -> None:
     flexmock(parser.node_adapter).should_receive("decode_script").with_args(script_pub_key["hex"]).and_return(
         AwaitableValue(decoded)
     )
-    parsed_address = await parser._decode_address_from_script_pub_key(script_pub_key)
+    parsed_address = await parser._get_address_from_script_pub_key(script_pub_key)
     assert parsed_address == address

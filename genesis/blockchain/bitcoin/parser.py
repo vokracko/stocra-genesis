@@ -106,7 +106,7 @@ class BitcoinParser(Parser):
                 address = PlainAddress(script_pub_key["address"])
             else:
                 try:
-                    address = await self._decode_address_from_script_pub_key(script_pub_key)
+                    address = await self._get_address_from_script_pub_key(script_pub_key)
                 except UnknownScriptPubKey:
                     logger.error("raw transaction: %s", json.dumps(raw_transaction, indent=4))
                     raise
@@ -129,7 +129,7 @@ class BitcoinParser(Parser):
         vin = raw_transaction["vin"]
         return len(vin) == 1 and vin[0].get("coinbase") is not None
 
-    async def _decode_address_from_script_pub_key(self, script_pub_key: dict) -> str:
+    async def _get_address_from_script_pub_key(self, script_pub_key: dict) -> str:
         addresses = script_pub_key.get("addresses", [])
 
         if len(addresses) == 1:
@@ -141,7 +141,13 @@ class BitcoinParser(Parser):
             return "nonstandard"
         elif script_type == "nulldata":
             return "null"
-        elif script_type in ["multisig", "pubkey"]:
+
+        return await self._decode_address_from_script_pub_key(script_pub_key)
+
+    async def _decode_address_from_script_pub_key(self, script_pub_key: dict) -> str:
+        script_type = script_pub_key["type"]
+
+        if script_type in ["multisig", "pubkey"]:
             result = await self.node_adapter.decode_script(script_pub_key["hex"])
             segwit_addresses = result.get("segwit", dict()).get("addresses", [])
 
