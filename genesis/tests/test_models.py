@@ -58,3 +58,14 @@ def test_amount_equal_wrong_type():
 def test_negative_fee():
     with pytest.raises(ValueError):
         PlainTransaction(fee=Amount(value=Decimal("-1"), currency_symbol=Currency.BITCOIN.symbol))
+
+
+def test_negative_fee_assignment():
+    transaction = PlainTransaction(
+        fee=Amount(value=Decimal("0"), currency_symbol=Currency.BITCOIN.symbol),
+        inputs=[],
+        outputs=[],
+        hash="hash",
+    )
+    with pytest.raises(ValueError):
+        transaction.fee = Amount(value=Decimal("-1"), currency_symbol=Currency.BITCOIN.symbol)

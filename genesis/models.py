@@ -87,6 +87,7 @@ class PlainTransaction(BaseModel):
 
     class Config:
         json_encoders = {Decimal: serialize_decimal}
+        validate_assignment = True
 
 
 class PlainBlock(BaseModel):
