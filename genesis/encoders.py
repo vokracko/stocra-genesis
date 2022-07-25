@@ -1,3 +1,4 @@
+import json
 from decimal import Decimal
 
 import orjson
@@ -19,7 +20,7 @@ def fast_serializer_to_str(obj: dict) -> str:
 
 
 def fast_deserializer_from_bytes(data: bytes) -> dict:
-    return orjson.loads(data)  # pylint:disable=no-member
+    return json.loads(data, parse_float=Decimal)
 
 
 def fast_deserializer_from_str(data: str) -> dict:

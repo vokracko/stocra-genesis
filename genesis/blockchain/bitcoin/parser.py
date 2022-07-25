@@ -114,7 +114,7 @@ class BitcoinParser(Parser):
             output = PlainOutput(
                 address=address,
                 amount=Amount(
-                    value=Decimal(str(vout["value"])),
+                    value=vout["value"],
                     currency_symbol=self.CURRENCY.symbol,
                 ),
             )
