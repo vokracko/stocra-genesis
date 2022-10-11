@@ -26,6 +26,16 @@ class AptosParser(Parser):
         )
 
     async def decode_transaction(self, raw_transaction: dict) -> PlainTransaction:
+        if raw_transaction["type"] != "user_transaction":
+            return PlainTransaction(
+                hash=raw_transaction["hash"],
+                inputs=[],
+                outputs=[],
+                fee=Amount(
+                    value=Decimal(0),
+                    currency_symbol=self.CURRENCY.symbol,
+                ),
+            )
         gas_used = Decimal(raw_transaction["gas_used"])
         gas_price = self.scale_amount(Decimal(raw_transaction["gas_unit_price"]))
         fee = gas_price * gas_used
