@@ -49,5 +49,7 @@ class AptosNodeAdapter(NodeAdapter):
             raise Unavailable("Node not available") from exc
 
     async def _get_json_or_raise_response_error_aiohttp(self, response: ClientResponse):
-        # {"message":"Block not found by Block height(429339)","error_code":"block_not_found","vm_error_code":null}
+        if response.status in [404, 410]:
+            raise DoesNotExist()
+
         return await fast_deserialize_response(response)
