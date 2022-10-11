@@ -1,9 +1,10 @@
 from typing import ClassVar, Dict
 
 from aiohttp import ClientError, ClientResponse, ClientSession
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 
 from genesis.blockchain.adapter import NodeAdapter
-from genesis.blockchain.exceptions import Unavailable
+from genesis.blockchain.exceptions import DoesNotExist, Unavailable
 from genesis.blockchains import Blockchain
 from genesis.encoders import fast_deserialize_response, fast_serializer_to_str
 
@@ -11,15 +12,23 @@ from genesis.encoders import fast_deserialize_response, fast_serializer_to_str
 class AptosNodeAdapter(NodeAdapter):
     BLOCKCHAIN: ClassVar[Blockchain] = Blockchain.APTOS
     session: ClientSession
+    mongo_client: AsyncIOMotorClient
+    mongo_collection: AsyncIOMotorCollection
 
     async def init_async(self) -> None:
         self.session = ClientSession(json_serialize=fast_serializer_to_str)
+        self.mongo_client = AsyncIOMotorClient(f"{self.BLOCKCHAIN.blockchain_name}-mongo-1")
+        mongo_database = self.mongo_client["stocra"]
+        self.mongo_collection = mongo_database["block_hash_to_number"]
 
     async def get_transaction(self, transaction_hash: str) -> dict:
         return await self.get(f"v1/transactions/by_hash/{transaction_hash}")
 
     async def get_block_by_hash(self, block_hash: str) -> dict:
-        raise NotImplementedError
+        mapping = await self.mongo_collection.find_one(block_hash)
+        if mapping is None:
+            raise DoesNotExist()
+        return await self.get_block_by_height(height=mapping["block_number"])
 
     async def get_block_by_height(self, height: int) -> dict:
         return await self.get(f"v1/blocks/by_height/{height}?with_transactions=true")

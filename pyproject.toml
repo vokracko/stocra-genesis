@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "genesis"
-version = "1.0.2"
+version = "1.0.3"
 description = ""
 authors = ["Lukáš Vokráčko <lukas@vokracko.cz>"]
 
@@ -15,6 +15,7 @@ orjson = "*"
 asyncpg = "*"
 bunyan = "*"
 PyYAML = "*"
+motor = "*"
 
 [tool.poetry.dev-dependencies]
 mypy = "*"
