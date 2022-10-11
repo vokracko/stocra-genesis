@@ -1,4 +1,4 @@
-from typing import ClassVar
+from typing import ClassVar, Optional
 
 from genesis.blockchains import Blockchain
 
@@ -7,9 +7,9 @@ class NodeAdapter:
     BLOCKCHAIN: ClassVar[Blockchain]
 
     url: str
-    token: str
+    token: Optional[str]
 
-    def __init__(self, url: str, token: str) -> None:
+    def __init__(self, url: str, token: Optional[str] = None) -> None:
         self.url = url
         self.token = token
 

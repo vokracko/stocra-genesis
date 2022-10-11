@@ -1,0 +1,70 @@
+from decimal import Decimal
+from typing import ClassVar
+
+from genesis.blockchain.aptos.adapter import AptosNodeAdapter
+from genesis.blockchain.parser import Parser
+from genesis.blockchains import Blockchain
+from genesis.currencies import Currency
+from genesis.logging import get_logger
+from genesis.models import Amount, PlainBlock, PlainInput, PlainOutput, PlainTransaction
+
+logger = get_logger(__name__)
+
+
+class AptosParser(Parser):
+    BLOCKCHAIN: ClassVar[Blockchain] = Blockchain.APTOS
+    CURRENCY: ClassVar[Currency] = Currency.APTOS
+    SCALING_FACTOR: ClassVar[Decimal] = Decimal("1e-8")
+    node_adapter: AptosNodeAdapter
+
+    async def decode_block(self, raw_block: dict) -> PlainBlock:
+        return PlainBlock(
+            timestamp_ms=int(raw_block["block_timestamp"]) / 1_000,
+            height=raw_block["block_height"],
+            hash=raw_block["block_hash"],
+            transactions=[transaction["hash"] for transaction in raw_block["transactions"]],
+        )
+
+    async def decode_transaction(self, raw_transaction: dict) -> PlainTransaction:
+        gas_used = Decimal(raw_transaction["gas_used"])
+        gas_price = self.scale_amount(Decimal(raw_transaction["gas_unit_price"]))
+        fee = gas_price * gas_used
+        amount = Decimal(0)
+        outputs = []
+        payload = raw_transaction.get("payload")
+        success = raw_transaction["success"]
+
+        if payload.get("function") == "0x1::aptos_account::transfer" and success:
+            amount = self.scale_amount(Decimal(payload["arguments"][1]))
+            outputs = [
+                PlainOutput(
+                    address=payload["arguments"][0],
+                    amount=Amount(
+                        value=amount,
+                        currency_symbol=self.CURRENCY.symbol,
+                    ),
+                )
+            ]
+
+        inputs = [
+            PlainInput(
+                address=raw_transaction["sender"],
+                amount=Amount(
+                    value=amount + fee,
+                    currency_symbol=self.CURRENCY.symbol,
+                ),
+            )
+        ]
+
+        return PlainTransaction(
+            hash=raw_transaction["hash"],
+            inputs=inputs,
+            outputs=outputs,
+            fee=Amount(
+                value=fee,
+                currency_symbol=self.CURRENCY.symbol,
+            ),
+        )
+
+    def scale_amount(self, amount: Decimal) -> Decimal:
+        return amount * self.SCALING_FACTOR
