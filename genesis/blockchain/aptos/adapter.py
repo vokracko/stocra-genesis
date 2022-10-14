@@ -49,7 +49,7 @@ class AptosNodeAdapter(NodeAdapter):
             raise Unavailable("Node not available") from exc
 
     async def _get_json_or_raise_response_error_aiohttp(self, response: ClientResponse):
-        if response.status in [404, 410]:
+        if response.status in [400, 404, 410]:
             raise DoesNotExist()
 
         return await fast_deserialize_response(response)
