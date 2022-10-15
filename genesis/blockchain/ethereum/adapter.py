@@ -92,7 +92,7 @@ class EthereumNodeAdapter(NodeAdapter):
         try:
             result = await fast_deserialize_response(response)
         except asyncio.TimeoutError as exc:
-            raise Unavailable("Timeour error") from exc
+            raise Unavailable("Timeout error") from exc
 
         if "error" in result:
             error = result["error"]

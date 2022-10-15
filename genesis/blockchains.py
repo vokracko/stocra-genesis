@@ -13,6 +13,7 @@ class Blockchain(ChoicesEnum):
     DOGECOIN = BlockchainInfo(name="dogecoin", type=BlockchainType.UTXO)
     CARDANO = BlockchainInfo(name="cardano", type=BlockchainType.UTXO)
     APTOS = BlockchainInfo(name="aptos", type=BlockchainType.ACCOUNT)
+    EOS = BlockchainInfo(name="eos", type=BlockchainType.ACCOUNT)
 
     @property
     def blockchain_name(self) -> str:

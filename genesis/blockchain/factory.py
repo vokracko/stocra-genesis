@@ -9,6 +9,8 @@ from genesis.blockchain.cardano.adapter import CardanoNodeAdapter
 from genesis.blockchain.cardano.parser import CardanoParser
 from genesis.blockchain.dogecoin.adapter import DogecoinNodeAdapter
 from genesis.blockchain.dogecoin.parser import DogecoinParser
+from genesis.blockchain.eos.adapter import EosNodeAdapter
+from genesis.blockchain.eos.parser import EosParser
 from genesis.blockchain.ethereum.adapter import EthereumNodeAdapter
 from genesis.blockchain.ethereum.parser import EthereumParser
 from genesis.blockchain.litecoin.adapter import LitecoinNodeAdapter
@@ -23,6 +25,7 @@ ADAPTERS: Dict[Blockchain, Type[NodeAdapter]] = {
     DogecoinNodeAdapter.BLOCKCHAIN: DogecoinNodeAdapter,
     CardanoNodeAdapter.BLOCKCHAIN: CardanoNodeAdapter,
     AptosNodeAdapter.BLOCKCHAIN: AptosNodeAdapter,
+    EosNodeAdapter.BLOCKCHAIN: EosNodeAdapter,
 }
 PARSERS: Dict[Blockchain, Type[Parser]] = {
     BitcoinParser.BLOCKCHAIN: BitcoinParser,
@@ -31,6 +34,7 @@ PARSERS: Dict[Blockchain, Type[Parser]] = {
     DogecoinParser.BLOCKCHAIN: DogecoinParser,
     CardanoParser.BLOCKCHAIN: CardanoParser,
     AptosParser.BLOCKCHAIN: AptosParser,
+    EosParser.BLOCKCHAIN: EosParser,
 }
 
 

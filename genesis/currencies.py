@@ -12,6 +12,7 @@ class Currency(ChoicesEnum):
     DOGECOIN = CurrencyInfo(symbol="DOGE", name="Dogecoin")
     ADA = CurrencyInfo(symbol="ADA", name="Ada")
     APTOS = CurrencyInfo(symbol="APT", name="Aptos")
+    EOS = CurrencyInfo(symbol="EOS", name="Eos")
 
     @property
     def symbol(self) -> str:
