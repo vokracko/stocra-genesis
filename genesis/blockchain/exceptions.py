@@ -18,6 +18,10 @@ class TooManyRequests(Unavailable):
     ...
 
 
+class UnableToLoadDataFromStorage(NodeException):
+    ...
+
+
 class UnknownNodeException(NodeException):
     ...
 

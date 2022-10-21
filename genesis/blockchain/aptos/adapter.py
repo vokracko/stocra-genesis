@@ -4,7 +4,7 @@ from aiohttp import ClientError, ClientResponse, ClientSession
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 
 from genesis.blockchain.adapter import NodeAdapter
-from genesis.blockchain.exceptions import DoesNotExist, Unavailable
+from genesis.blockchain.exceptions import DoesNotExist, NodeException, Unavailable, UnableToLoadDataFromStorage
 from genesis.blockchains import Blockchain
 from genesis.encoders import fast_deserialize_response, fast_serializer_to_str
 
@@ -52,4 +52,14 @@ class AptosNodeAdapter(NodeAdapter):
         if response.status in [400, 404, 410]:
             raise DoesNotExist()
 
+        if response.status == 500:
+            response_json = await fast_deserialize_response(response)
+            if (
+                response_json.get("error_code") == "internal_error"
+                and response_json.get("message")
+                == "Failed to convert transaction data from storage: invalid utf-8 sequence of 1 bytes from index 8"
+            ):
+                raise UnableToLoadDataFromStorage("Unable to convert transaction data from storage")
+
+        response.raise_for_status()
         return await fast_deserialize_response(response)
