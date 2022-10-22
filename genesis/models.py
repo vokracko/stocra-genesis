@@ -79,7 +79,7 @@ class PlainTransaction(BaseModel):
     fee: Amount
 
     @validator("fee")
-    def validate_fee(cls, value: Amount) -> Amount:
+    def validate_fee(cls, value: Amount) -> Amount:  # pylint: disable=no-self-argument
         if value.value < 0:
             raise ValueError(f"Fee cannot be negative! Got {value.value}")
 
