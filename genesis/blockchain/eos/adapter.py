@@ -1,8 +1,8 @@
 import asyncio
-from functools import lru_cache
 from typing import ClassVar, Dict, Optional
 
 from aiohttp import ClientError, ClientResponse, ClientSession
+from async_lru import alru_cache
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 
 from genesis.blockchain.adapter import NodeAdapter
@@ -38,7 +38,7 @@ class EosNodeAdapter(NodeAdapter):
             f"Transaction {transaction_hash} not found in mapping to block number {mapping['block_number']}"
         )
 
-    @lru_cache(maxsize=100)
+    @alru_cache(maxsize=100)
     async def get_block_by_height(self, height: int) -> dict:
         data = dict(block_num_or_id=height)
         return await self.post("v1/chain/get_block", data)
