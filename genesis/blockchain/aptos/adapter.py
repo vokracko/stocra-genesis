@@ -4,7 +4,11 @@ from aiohttp import ClientError, ClientResponse, ClientSession
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 
 from genesis.blockchain.adapter import NodeAdapter
-from genesis.blockchain.exceptions import DoesNotExist, NodeException, Unavailable, UnableToLoadDataFromStorage
+from genesis.blockchain.exceptions import (
+    DoesNotExist,
+    UnableToLoadDataFromStorage,
+    Unavailable,
+)
 from genesis.blockchains import Blockchain
 from genesis.encoders import fast_deserialize_response, fast_serializer_to_str
 
