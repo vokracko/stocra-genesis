@@ -22,6 +22,10 @@ class UnableToLoadDataFromStorage(NodeException):
     ...
 
 
+class SkippedBlock(NodeException):
+    ...
+
+
 class UnknownNodeException(NodeException):
     ...
 
