@@ -27,26 +27,77 @@ class AptosParser(Parser):
 
     async def decode_transaction(self, raw_transaction: dict) -> PlainTransaction:
         if raw_transaction["type"] != "user_transaction":
-            return PlainTransaction(
-                hash=raw_transaction["hash"],
-                inputs=[],
-                outputs=[],
-                fee=Amount(
-                    value=Decimal(0),
-                    currency_symbol=self.CURRENCY.symbol,
-                ),
-            )
-        gas_used = Decimal(raw_transaction["gas_used"])
-        gas_price = self.scale_amount(Decimal(raw_transaction["gas_unit_price"]))
-        fee = gas_price * gas_used
-        amount = Decimal(0)
-        outputs = []
-        payload = raw_transaction.get("payload")
-        success = raw_transaction["success"]
+            return self._decode_non_user_transaction(raw_transaction)
 
-        if payload.get("function") == "0x1::aptos_account::transfer" and success:
-            amount = self.scale_amount(Decimal(payload["arguments"][1]))
-            outputs = [
+        if not raw_transaction["success"]:
+            return self._decode_empty_user_transaction(raw_transaction)
+
+        payload = raw_transaction.get("payload")
+        function = payload.get("function")
+
+        if self._is_aptos_account_transfer(function):
+            return self._decode_aptos_account_transfer(raw_transaction)
+        elif self._is_aptos_coin_transfer(function):
+            return self._decode_aptos_coin_transfer(raw_transaction)
+        else:
+            return self._decode_empty_user_transaction(raw_transaction)
+
+    def _decode_aptos_coin_transfer(self, raw_transaction: dict) -> PlainTransaction:
+        payload = raw_transaction.get("payload")
+        coin_name = payload["type_arguments"][0]
+        amount = self._scale_amount(Decimal(payload["arguments"][1]))
+        fee = self._get_fee(raw_transaction)
+
+        return PlainTransaction(
+            hash=raw_transaction["hash"],
+            inputs=[
+                PlainInput(
+                    address=raw_transaction["sender"],
+                    amount=Amount(
+                        value=fee,
+                        currency_symbol=self.CURRENCY.symbol,
+                    ),
+                ),
+                PlainInput(
+                    address=raw_transaction["sender"],
+                    amount=Amount(
+                        value=amount,
+                        currency_symbol=coin_name,
+                    ),
+                ),
+            ],
+            outputs=[
+                PlainOutput(
+                    address=payload["arguments"][0],
+                    amount=Amount(
+                        value=amount,
+                        currency_symbol=coin_name,
+                    ),
+                )
+            ],
+            fee=Amount(
+                value=fee,
+                currency_symbol=self.CURRENCY.symbol,
+            ),
+        )
+
+    def _decode_aptos_account_transfer(self, raw_transaction: dict) -> PlainTransaction:
+        payload = raw_transaction.get("payload")
+        amount = self._scale_amount(Decimal(payload["arguments"][1]))
+        fee = self._get_fee(raw_transaction)
+
+        return PlainTransaction(
+            hash=raw_transaction["hash"],
+            inputs=[
+                PlainInput(
+                    address=raw_transaction["sender"],
+                    amount=Amount(
+                        value=amount + fee,
+                        currency_symbol=self.CURRENCY.symbol,
+                    ),
+                )
+            ],
+            outputs=[
                 PlainOutput(
                     address=payload["arguments"][0],
                     amount=Amount(
@@ -54,27 +105,54 @@ class AptosParser(Parser):
                         currency_symbol=self.CURRENCY.symbol,
                     ),
                 )
-            ]
-
-        inputs = [
-            PlainInput(
-                address=raw_transaction["sender"],
-                amount=Amount(
-                    value=amount + fee,
-                    currency_symbol=self.CURRENCY.symbol,
-                ),
-            )
-        ]
-
-        return PlainTransaction(
-            hash=raw_transaction["hash"],
-            inputs=inputs,
-            outputs=outputs,
+            ],
             fee=Amount(
                 value=fee,
                 currency_symbol=self.CURRENCY.symbol,
             ),
         )
 
-    def scale_amount(self, amount: Decimal) -> Decimal:
+    def _decode_empty_user_transaction(self, raw_transaction: dict) -> PlainTransaction:
+        fee = self._get_fee(raw_transaction)
+        return PlainTransaction(
+            hash=raw_transaction["hash"],
+            inputs=[
+                PlainInput(
+                    address=raw_transaction["sender"],
+                    amount=Amount(
+                        value=fee,
+                        currency_symbol=self.CURRENCY.symbol,
+                    ),
+                )
+            ],
+            outputs=[],
+            fee=Amount(
+                value=fee,
+                currency_symbol=self.CURRENCY.symbol,
+            ),
+        )
+
+    def _decode_non_user_transaction(self, raw_transaction):
+        return PlainTransaction(
+            hash=raw_transaction["hash"],
+            inputs=[],
+            outputs=[],
+            fee=Amount(
+                value=Decimal(0),
+                currency_symbol=self.CURRENCY.symbol,
+            ),
+        )
+
+    def _scale_amount(self, amount: Decimal) -> Decimal:
         return amount * self.SCALING_FACTOR
+
+    def _get_fee(self, raw_transaction: dict) -> Decimal:
+        gas_used = Decimal(raw_transaction["gas_used"])
+        gas_price = self._scale_amount(Decimal(raw_transaction["gas_unit_price"]))
+        return gas_price * gas_used
+
+    def _is_aptos_account_transfer(self, function_name: str) -> bool:
+        return function_name == "0x1::aptos_account::transfer"
+
+    def _is_aptos_coin_transfer(self, function_name: str) -> bool:
+        return function_name == "0x1::coin::transfer"

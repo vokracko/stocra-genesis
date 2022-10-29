@@ -23,6 +23,11 @@ class UnableToLoadDataFromStorage(NodeException):
 
 
 class SkippedBlock(NodeException):
+    """
+    In POS blockchain there might be a gap between blocks
+    where a particular number of sequence might be missing
+    """
+
     ...
 
 
