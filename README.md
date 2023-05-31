@@ -3,7 +3,7 @@ Library to interact with blockchain nodes
 
 ## Installation
 ```bash
-poetry install
+poetry add git+https://github.com/vokracko/stocra-genesis.git
 ```
 
 ## Usage
